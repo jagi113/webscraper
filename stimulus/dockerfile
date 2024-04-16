@@ -1,0 +1,13 @@
+FROM node:14-alpine
+
+WORKDIR /
+
+COPY ./stimulus/package*.json ./
+COPY ./stimulus/webpack.config.js ./
+
+RUN npm install
+
+COPY ./stimulus/controllers ./controllers
+COPY ./stimulus/src ./src
+
+CMD ["npm", "run", "watch"]

@@ -1,0 +1,25 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Webscraper{% endblock %}</title>
+    <link rel='stylesheet' type="text/css" media="screen" href="{% static 'css/styles.css' %}">
+    <link rel='stylesheet' type="text/css" media="screen" href="{% static 'css/tailwind.css' %}">
+    <script async defer src="{% static '/js/turbo-7.1.0.js' %}"></script>
+    <script async defer src="{% static 'js/stimulus/bundle.js' %}"></script>
+    {% comment %} <script async defer src="{% static 'stimulus/bundle.js' %}"></script> {% endcomment %}
+
+</head>
+<body>
+    <div class="mx-auto w-[1200px] min-h-screen relative" data-controller="scroll-top" data-action="scroll@window->scroll-top#handleScroll">
+        {% comment %} {% include 'components/menu.html' %} {% endcomment %}
+
+        {% block content %}
+
+        {% endblock %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,233 @@
+{% load i18n %}
+
+{% load static %}
+
+<div class="bottom-menu">
+    <div class="w-full flex items-center justify-between max-w-[1110px] mx-auto relative h-[70px]">
+        <div class="flex justify-between grow">
+            <div class="flex items-center">
+
+
+                <a href="/" class="ml-4 xl:ml-0">
+                    Home Logo
+                </a>
+            </div>
+            <nav class="hidden lg:flex static w-full mt-1">
+                <ul 
+                    style="color: var(--bottom-menu-link-color)"
+                    class="flex w-full ml-6 justify-end list-none text-lg no-link remove-link-styles"
+                >
+
+                        <li class="flex items-center">
+                            <a data-turbo="false" class="no-underline mr-5 border-solid border-0 border-b-2 border-transparent {{hover_border_style}}" aria-label="Fotoblogy" href="/blogs/">
+                                {% trans "Fotoblogy" %}
+                            </a>
+                        </li>
+                        <li class="flex items-center">
+                            <a class="no-underline mr-5 border-solid border-0 border-b-2 border-transparent {{hover_border_style}}" aria-label="{% trans "Bazár" %}" href="">
+                                {% trans "Bazár" %}
+                            </a>
+                        </li>
+
+                        <li class="flex items-center">
+                            <a 
+                                class="no-underline mr-5 border-solid border-0 border-b-2 border-transparent {{hover_border_style}}" 
+                                aria-label="{% trans "Profesionáli" %}"
+                                href="/catalog/"
+
+                            >
+                                {% trans "Profesionáli" %}
+                            </a>
+                        </li>
+                   
+                </ul>
+            </nav>
+        </div>
+
+
+        <div class="flex items-center w-full justify-end ml-2 h-[70px]">
+            <div
+                data-controller="menu--search-bar"
+                data-menu--search-bar-search--main-modal-outlet="#search-modal"
+                class="hidden md:flex items-center h-full pr-2.5"
+            >
+                <form method="GET" action="/search/" class="flex items-center w-full">
+                    
+                </form>
+            </div>
+            
+            
+                <div
+                    class="group text-white border-[#012d55] hover:bg-white hover:text-gray-700 flex justify-end w-min h-full border-t-0 border-b-0 border-l border-solid"
+                >
+                    <div class="text-current flex items-center w-full h-full justify-end">
+                        {% comment %} <form
+                            action="{% url 'common:login' %}"
+                            method="GET"
+                            class="text-current"
+                        > {% endcomment %}
+                            <button type="submit" class="flex py-2.5 px-5 bg-transparent border-none outline-none cursor-pointer text-current">
+                                <span class="flex items-center justify-center text-current">
+
+                                    <div class="text-current">
+                                        <div class="text-current">
+                                            <span class="w-[95px] inline-block text-xs text-current">{% trans "Prihlasenie / Registracia" %}</span>
+                                        </div>
+                                    </div>
+                                </span>
+                            </button>
+                        {% comment %} </form> {% endcomment %}
+
+                        <div class="hidden">
+                            <div>
+                                <button aria-label="User Panel Button 3">
+                                    <span>
+                                        <span>
+                                            <div
+                                                class="w-5 h-5 bg-white %}"
+                                                style="-webkit-mask-image: url({% static 'common/icons/menu/hamburger.svg' %});mask-image: url({% static 'common/icons/menu/hamburger.svg' %});"
+                                            ></div>
+                                        </span>
+                                        <span>
+                                            <span></span>
+                                        </span>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% with item_class="flex items-center p-4 border-b border-blue-50 cursor-pointer hover:bg-blue-50" sub_item="text-base py-3 cursor-pointer" %}
+                    <div
+                        data-controller="menu--user-mobile-dropdown" 
+                        class="lg:hidden relative w-[80px] border-l h-full border-[#012d55] %}"
+                    >
+                        <div
+                            data-menu--user-mobile-dropdown-target="container"
+                            class="h-full w-full"
+                        >
+                            <button
+                                class="h-full w-full flex items-center justify-center"
+                                data-action="click->menu--user-mobile-dropdown#toggleDropdown" 
+                                aria-label="Mobilné rolovacie menu"
+                            >
+                                <div
+                                    class="w-5 h-5 bg-white"
+                                    style="-webkit-mask-image: url({% static 'common/icons/menu/hamburger.svg' %});mask-image: url({% static 'common/icons/menu/hamburger.svg' %});"
+                                ></div>
+                            </button>
+                            <div
+                                data-menu--user-mobile-dropdown-target="dropdown" 
+                                class="hidden z-40 absolute top-[70px] right-0 bg-white w-[320px] shadow-md text-lg text-primary-700 font-light"
+                            >
+                                <details class="no-icon">
+                                    <summary class="{{item_class}}" style="list-style: none;">
+                                        <div class="flex-grow">{% trans "Fórum" %}</div>
+                                        <div
+                                            class="w-3 h-3 bg-primary-700"
+                                            style="-webkit-mask-image: url({% static "common/icons/menu/arrow_down.svg" %});mask-image: url({% static "common/icons/menu/arrow_down.svg" %})">
+                                        </div>
+                                    </summary>
+                                    {% comment %} <div class="flex flex-col ml-8">
+                                        <a href="{% url 'neoforum:forum' %}" class="{{sub_item}}">{% trans "Kategorie" %}</a>
+                                        <a href="{% url 'neoforum:newest-threads' %}" class="{{sub_item}}">{% trans "Najnovsie diskusie" %}</a>
+                                        <a href="{% url 'neoforum:active-threads' %}" class="{{sub_item}}">{% trans "Kde sa diskutuje" %}</a>
+                                        <a href="{% url 'neoforum:my-contributions' %}" class="{{sub_item}}">{% trans "Kam som prispel" %}</a>
+                                        <a href="{% url 'neoforum:subscribed-topics' %}" class="{{sub_item}}">{% trans "Sledovane diskusie" %}</a>
+                                        <a href="{% url 'neoforum:leaderboard-messages' %}" class="{{sub_item}}">{% trans 'Sien slavy' %}</a>
+                                    </div> {% endcomment %}
+                                </details>
+                                <details class="no-icon">
+                                    <summary class="{{item_class}}" style="list-style: none;">
+                                        <div class="flex-grow">{% trans "Fotoblogy" %}</div>
+                                        <div
+                                            class="w-3 h-3 bg-primary-700"
+                                            style="-webkit-mask-image: url({% static "common/icons/menu/arrow_down.svg" %});mask-image: url({% static "common/icons/menu/arrow_down.svg" %})">
+                                        </div>
+                                    </summary>
+                                    <div class="flex flex-col ml-8">
+                                        <a href="/blogs/" class="{{sub_item}}">{% trans "Vsetky prispevky" %}</a>
+                                        <a href="/blogs/my-selection/" class="{{sub_item}}">{% trans "Moj vyber" %}</a>
+                                        <a href="/blogs/friends/" class="{{sub_item}}">{% trans "Priatelia a oblubene" %}</a>
+                                        <a href="/list-of-groups/" class="{{sub_item}}">{% trans "Zoznam skupin" %}</a>
+                                        <a href="/list-of-groups/mine/" class="{{sub_item}}">{% trans "Moje skupiny" %}</a>
+                                        <a href="/blogs/collections/" class="{{sub_item}}">{% trans "Kolekcie" %}</a>
+                                        <a href="/inspirations/" class="{{sub_item}}">{% trans "Inspiracie" %}</a>
+                                    </div>
+                                </details>
+                                <details class="no-icon">
+                                    <summary class="{{item_class}}" style="list-style: none;">
+                                        <div class="flex-grow">{% trans "Bazar" %}</div>
+                                        <div
+                                            class="w-3 h-3 bg-primary-700"
+                                            style="-webkit-mask-image: url({% static "common/icons/menu/arrow_down.svg" %});mask-image: url({% static "common/icons/menu/arrow_down.svg" %})">
+                                        </div>
+                                    </summary>
+                                    <div class="flex flex-col ml-8">
+                                        <a href="" class="{{sub_item}}">{% trans "Vsetky inzeraty" %}</a>
+                                        <a href="" class="{{sub_item}}">{% trans "Moj bazar" %}</a>
+                                    </div>
+                                </details>
+                                <details class="no-icon">
+                                    <summary class="{{item_class}}" style="list-style: none;">
+                                        <div class="flex-grow">{% trans "Profesionali" %}</div>
+                                        <div
+                                            class="w-3 h-3 bg-primary-700"
+                                            style="-webkit-mask-image: url({% static "common/icons/menu/arrow_down.svg" %});mask-image: url({% static "common/icons/menu/arrow_down.svg" %})">
+                                        </div>
+                                    </summary>
+                                    <div class="flex flex-col ml-8">
+                                        <a data-turbo="false" href="/catalog/" class="{{sub_item}}">{% trans "Vsetci Profesionali" %}</a>
+                                        <a href="/market/?excludeUsed=true" class="{{sub_item}}">{% trans "Inzeraty Profesionalov" %}</a>
+                                    </div>
+                                </details>
+
+                                <a href="/magazine" class="{{item_class}}">{% trans "Magazín" %}</a>
+                                
+
+
+                                <div
+                                    data-controller="menu--search-bar"
+                                    data-menu--search-bar-search--main-modal-outlet="#search-modal"
+                                    class="flex items-center w-full my-4 px-8"
+                                >
+                                    <form method="GET" action="/search/" class="flex items-center w-full">
+                                        <div
+                                            data-menu--search-bar-target="container"
+                                            class="flex items-center justify-start rounded-sm border bg-blue-100"
+                                        >
+                                            <div
+                                                data-menu--search-bar-target="iconContainer" 
+                                                class="m-1 rounded-sm mr-2.5 flex items-center justify-center text-primary-500"
+                                                style="min-height: 30px; min-width: 30px;padding: 2px;"
+                                            >
+                                                <div 
+                                                    class="w-5 h-5 bg-primary-500"
+                                                    data-menu--search-bar-target="icon"
+                                                    style="-webkit-mask-image: url({% static 'common/icons/menu/search.svg' %});mask-image: url({% static 'common/icons/menu/search.svg' %});"
+                                                ></div>
+                                            </div>
+                                            <label for="search-input-id-dropdown" style="clip: rect(0,0,0,0)" class="w-1 h-1 p-0 absolute overflow-hidden opacity-0">
+                                                {% trans "zadajte hľadaný výraz" %}
+                                            </label>
+                                            <input
+                                                name="query"
+                                                data-action="focus->menu--search-bar#focus blur->menu--search-bar#blur keyup->menu--search-bar#keyUpHandler"
+                                                type="text"
+                                                id="search-input-id-dropdown"
+                                                class="max-w-[230px] h-[30px]  w-full outline-none bg-transparent border-none text-gray-700"
+                                                placeholder="{% trans "zadajte hľadaný výraz" %}"
+                                                value=""
+                                            >
+                                        </div>
+                                        <input type="submit" style="display:none">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endwith %}
+           
+        </div>
+    </div>
+</div>

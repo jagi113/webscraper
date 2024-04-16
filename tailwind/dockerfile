@@ -1,0 +1,16 @@
+FROM node:21.7.2
+
+# Set working directory
+WORKDIR /
+
+# Install Tailwind CSS
+RUN npm install -g tailwindcss@3.4.3
+
+# Copy Tailwind CSS configuration
+COPY ./tailwind/tailwind.config.js /tailwind/tailwind.config.js
+
+# Copy the entire static directory
+COPY ./static /static
+
+# Generate Tailwind CSS styles (input: styles.css, output: tailwind.css)
+CMD ["bash", "-c", "tailwindcss -i /static/css/styles.css -o /static/css/tailwind.css -c /tailwind/tailwind.config.js --watch"]

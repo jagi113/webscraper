@@ -1,0 +1,83 @@
+{% load server_class %}
+{% load system_tags %}
+{% load static %}
+{% load i18n %}
+
+{% if request.server.is_garden %}
+   {% include 'common/components/top_menu_garden.html' %}
+{% else %}
+    <div
+        style="background-color: var(--living-primary-800, var(--top-menu))"
+        class="hidden md:block w-full h-[40px] remove-link-styles {% server_value living="bg-primary-800" wedding="bg-[#1d8e8e]" %}"
+    >
+        <div 
+            class="max-w-[1110px] flex flex-row h-full items-center mx-auto relative no-underline"
+            style="color: var(--top-menu-link-color)"
+        >
+            {% if request.user.is_authenticated %}
+                <div 
+                    style="background-color: var(--top-menu-user-color)"
+                    class="absolute top-0 right-0 w-[221px] h-full"
+                >
+                    <div class="flex items-center h-full">
+                        <span class="inline-block mx-2">
+                            <a data-turbo="false" href="/blog/{{request.user.username}}/">
+                                {% if request.user.profile.avatar %}
+                                    <img
+                                        class="w-6 h-6 rounded-md"
+                                        sizes="(min-width: 64rem) 80px,50px"
+                                        alt="Profilova fotka"
+                                        src="{% photofile_url request.user.profile.avatar version=500 %}" 
+                                        srcset="{{request.user.profile.avatar.srcset}}"
+                                    >
+                                {% else %}
+                                    <div
+                                        class="w-4 h-4 bg-white"
+                                        {% if request.user.profile.is_female %}                                    
+                                            style="-webkit-mask-image: url({% static 'common/icons/avatar/female.svg' %});mask-image: url({% static 'common/icons/avatar/female.svg' %});"
+                                        {% else %}
+                                            style="-webkit-mask-image: url({% static 'common/icons/avatar/male.svg' %});mask-image: url({% static 'common/icons/avatar/male.svg' %});"
+                                        {% endif %}
+                                    ></div>
+                                {% endif %}
+                            </a>
+                        </span>
+                        <a data-turbo="false" class="text-white no-underline" href="/blog/{{request.user.username}}/">{{request.user.username}}</a>   
+                        {% if request.user.profile.is_vendor %}
+                            <div class="text-xs ml-2 font-bold px-1 bg-gray-500 rounded-md">PRO</div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+            <a href="{% url 'about-us' %}" class="mr-4 lg:mr-8 no-underline text-sm pl-4 lg:pl-2 xl:pl-0">{% trans 'ABOUT_US_PAGE_TITLE' %}</a>
+            <a data-turbo="false" href="/pro-landing/" class="mr-4 lg:mr-8 no-underline text-sm pl-4 lg:pl-2 xl:pl-0">{% trans 'BECOME_PRO' %}</a>
+            
+            {% if request.server.is_living and request.server.is_sk %}
+                <a href="https://www.modrastrecha.cz" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">Modrastrecha.cz</a>
+                <a href="https://mojasvadba.zoznam.sk" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">Mojasvadba.sk</a>
+                <a href="https://www.beremese.cz" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">Beremese.cz</a>
+            {% elif request.server.is_living and request.server.is_cz %}
+                <a href="https://www.beremese.cz" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">Beremese.cz</a>
+                <a href="https://www.modrastrecha.sk" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">Modrastrecha.sk</a>
+                <a href="https://mojasvadba.zoznam.sk" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">Mojasvadba.sk</a>
+            {% elif request.server.is_wedding and request.server.is_sk %}
+                <a href="https://www.modrastrecha.sk" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">Modrastrecha.sk</a>
+                <a href="https://www.beremese.cz" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">Beremese.cz</a>
+                <a href="https://www.modrastrecha.cz" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">Modrastrecha.cz</a>
+            {% elif request.server.is_wedding and request.server.is_cz %}
+                <a href="https://www.modrastrecha.sk" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">Modrastrecha.sk</a>
+                <a href="https://mojasvadba.zoznam.sk" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">Mojasvadba.sk</a>
+                <a href="https://www.modrastrecha.cz" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">Modrastrecha.cz</a>
+            {% else %}
+                <a href="https://www.modrastrecha.cz" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">Modrastrecha.cz</a>
+                <a href="https://mojasvadba.zoznam.sk" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">Mojasvadba.sk</a>
+                <a href="https://www.beremese.cz" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">Beremese.cz</a>
+            {% endif %}
+
+            <a href="https://www.zahrada.sk" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">Záhrada.sk</a>
+            <a href="{% server_value sk="https://mojdom.zoznam.sk" cz="https://homebydleni.cz" %}" target="_blank" class="mr-4 lg:mr-8 no-underline text-sm">
+                {% server_value sk="Mojdom.sk" cz="Homebydleni.cz" %}
+            </a>
+        </div>
+    </div>
+{% endif %}

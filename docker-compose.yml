@@ -1,0 +1,20 @@
+version: '3'
+services:
+  tailwind:
+    tty: true
+    restart: always
+    build:
+      context: ./
+      dockerfile: ./tailwind/Dockerfile
+    volumes:
+      - ./static/:/static
+      - ./:/webscraper
+    
+  stimulus:
+    restart: always
+    build:
+      context: ./
+      dockerfile: ./stimulus/Dockerfile
+    volumes:
+      - ./stimulus/controllers:/controllers
+      - ./static/js/stimulus:/static/js/stimulus

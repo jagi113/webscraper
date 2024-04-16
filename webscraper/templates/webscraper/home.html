@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="my-10 w-full">
+    <h1 class="font-extrabold text-xl italic text-blue-700 my-10">Webscraper</h1>
+    {% include 'common/scroll_to_top_button.html' %}
+    {% include 'webscraper/components/main_website_form.html' with main_website_form=main_website_form %}
+    <div id="main_page_response" class="my-8"></div>
+</div>
+{% endblock %}
