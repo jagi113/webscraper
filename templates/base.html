@@ -10,15 +10,14 @@
     <link rel='stylesheet' type="text/css" media="screen" href="{% static 'css/tailwind.css' %}">
     <script async defer src="{% static '/js/turbo-7.1.0.js' %}"></script>
     <script async defer src="{% static 'js/stimulus/bundle.js' %}"></script>
-    {% comment %} <script async defer src="{% static 'stimulus/bundle.js' %}"></script> {% endcomment %}
 
 </head>
 <body>
+    {% include 'components/menu.html' %}
     <div class="mx-auto w-[1200px] min-h-screen relative" data-controller="scroll-top" data-action="scroll@window->scroll-top#handleScroll">
-        {% comment %} {% include 'components/menu.html' %} {% endcomment %}
+        {% include 'common/scroll_to_top_button.html' %}
 
         {% block content %}
-
         {% endblock %}
     </div>
 </body>

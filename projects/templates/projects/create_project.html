@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<form id="project_form" method="POST" action="{% url 'projects:create-project' %}" class="flex flex-col gap-6">
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="flex flex-row items-center align-middle w-full gap-8">
+            <div class="text-lg text-gray-600 font-medium min-w-32 w-fit align-middle">
+                {{ field.label_tag }}
+            </div>
+            <div class="flex-grow">
+                {{ field }}
+            </div>
+        </div>
+    {% endfor %}
+
+    <button type="submit" class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium">
+        Create Project
+    </button>
+</form>
+
+{% endblock %}

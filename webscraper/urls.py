@@ -16,12 +16,18 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from webscraper import views
+from django.views.generic.base import RedirectView
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", views.HomeView.as_view(), name="home"),
-    path("scrape-main-page/", views.ScrapeMainPage.as_view(), name="scrape-main-page"),
+    path("", include("projects.urls")),
+    path("<int:project_id>/", views.ScrapingProject.as_view(), name="project"),
+    path(
+        "<int:project_id>/scrape-main-page/",
+        views.ScrapeMainPage.as_view(),
+        name="scrape-main-page",
+    ),
 ]

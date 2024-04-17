@@ -1,4 +1,4 @@
-<form id="main_website_form" method="GET" action="{% url 'scrape-main-page' %}" class="flex flex-col">
+<form id="main_website_form" method="GET" action="{% url 'scrape-main-page' project.id %}" class="flex flex-col">
     {% csrf_token %}
     <div class="flex flex-row items-center align-middle w-full gap-8">
         <div class="text-lg text-gray-600 font-medium min-w-fit align-middle"> <!-- Set flex-none to prevent resizing -->

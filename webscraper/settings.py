@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "webscraper.apps.WebscraperAppConfig",
     "scrapers.apps.ScrapersAppConfig",
+    "scraped.apps.ScrapedAppConfig",
+    "projects.apps.ProjectsAppConfig",
 ]
 
 MIDDLEWARE = [

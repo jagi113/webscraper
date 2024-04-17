@@ -3,9 +3,9 @@
 {% block content %}
 
 <div class="my-10 w-full">
-    <h1 class="font-extrabold text-xl italic text-blue-700 my-10">Webscraper</h1>
-    {% include 'common/scroll_to_top_button.html' %}
+    
+    <h1 class="text-2xl text-gray-700 font-bold mb-8">{{ project.name }}</h1>
     {% include 'webscraper/components/main_website_form.html' with main_website_form=main_website_form %}
-    <div id="main_page_response" class="my-8"></div>
+    <div id="response" class="my-8"></div>
 </div>
 {% endblock %}

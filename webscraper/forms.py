@@ -22,7 +22,7 @@ class MainWebsiteForm(forms.Form):
         validators=[URLValidator(), validate_url_extension],
         widget=forms.TextInput(
             attrs={
-                "class": "w-full p-3 focus:border-gray-600 border-2 border-gray-500 rounded-md min-w-96 inline-block",
+                "class": "w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block",
                 "rows": 1,
                 "placeholder": "https://www.main_page.com",
             }
