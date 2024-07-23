@@ -10,6 +10,9 @@ export const loadElement = (attrsObj, elementName) => {
         element.onload = () => {
             resolve(element);
         };
+        element.onerror = () => {
+            reject(new Error(`Failed to load ${elementName}`));
+        };
     });
 };
 
@@ -41,5 +44,7 @@ export const loadScriptWithInnerHTML = (attrsObj, innerHtml) => {
     return loadElementWithInnerHTML(attrsObj, "script", innerHtml);
 };
 export const loadScripts = (attrsObjects) => {
-    return Promise.all(attrsObjects.map((attrObject) => loadScript(attrObject)));
+    return Promise.all(
+        attrsObjects.map((attrObject) => loadScript(attrObject))
+    );
 };

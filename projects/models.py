@@ -1,13 +1,10 @@
 from django.db import models
 
-# Create your models here.
-from django.db import models
-
 # from django.contrib.auth.models import User
 
 
 def default_fields():
-    return {"fields": []}
+    return {"fields": {}}  # "fields":{"field_name":"field_selector"}
 
 
 class Project(models.Model):
@@ -20,9 +17,9 @@ class Project(models.Model):
     main_page_url = models.CharField(max_length=1023)
     name = models.CharField(max_length=1023, default="", blank=True, null=True)
     number_of_pages = models.IntegerField(default=0)
-    fields = models.JSONField(default=default_fields)
     selector_type = models.CharField(max_length=10, choices=SELECTOR_CHOICES)
-    # results = models.ForeignKey(Results)
+    # component_path = models.CharField(max_length=1023)
+    fields = models.JSONField(default=default_fields)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

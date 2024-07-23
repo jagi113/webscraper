@@ -1,0 +1,11 @@
+{% load static %}
+
+<i
+    style="-webkit-mask-image: url({% static 'icons/copy-icon.svg' %});mask-image: url({% static 'icons/copy-icon.svg' %});"
+    class="flex h-4 w-4 items-center align-middle bg-gray-100"
+    onclick="navigator.clipboard.writeText('{{ value|escapejs }}').then(alert('Code copied')).catch(() => {alert('Clipboard blocked');execCopy('{{ value|escapejs }}')});"
+></i> 
+
+<script>
+    function execCopy(value) { const t = document.createElement('textarea'); t.value = value; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); alert('Code copied by second way!');}
+</script>

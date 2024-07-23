@@ -6,6 +6,10 @@
     
     <h1 class="text-2xl text-gray-700 font-bold mb-8">{{ project.name }}</h1>
     {% include 'webscraper/components/main_website_form.html' with main_website_form=main_website_form %}
-    <div id="response" class="my-8"></div>
+    <div id="response" class="my-8">
+        {% if html_response and main_website %}
+            {% include 'webscraper/components/response.html' with source=main_website html_response=html_response %}
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
