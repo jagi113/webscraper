@@ -3,17 +3,19 @@ import { loadScript, loadLink } from "./utils/load_script";
 
 export default class extends Controller {
     static values = { content: String };
-    static targets = ["content"];
+    static targets = ["content", "spinner"];
 
     connect() {
+        this.showSpinner();
         this.highlightContent().catch((error) => {
             console.error("Error highlighting content:", error);
         });
     }
 
     async highlightContent() {
-        const htmlContent = this.contentValue;
+        let htmlContent = this.contentValue;
         if (htmlContent) {
+            console.log("Content loaded");
             try {
                 await this.loadPrism();
                 this.contentTarget.innerHTML = `<pre><code class="language-html">${Prism.highlight(
@@ -21,42 +23,63 @@ export default class extends Controller {
                     Prism.languages.html,
                     "html"
                 )}</code></pre>`;
+                this.hideSpinner();
+                this.makeTagsCollapsible();
             } catch (error) {
                 console.error("Error during Prism highlighting:", error);
+                this.hideSpinner(); // Hide spinner even if there's an error
             }
-            
         } else {
             console.error("No HTML content provided to highlight.");
+            this.hideSpinner(); // Hide spinner if no content
         }
     }
 
-    makeCodeInteractive() {
-        // Add interactive functionality to your code blocks
-        document.querySelectorAll('code[data-code-content="true"]').forEach((code) => {
-          code.innerHTML = code.innerHTML
-            .replace(/&lt;(\/?\w+)&gt;/g, (match, p1) => `<span class="collapsible">${match}</span>`)
-            .replace(/&lt;(\/?\w+)&gt;/g, (match, p1) => `<span class="collapsible">${match}</span>`);
+    showSpinner() {
+        this.spinnerTarget.classList.remove("hidden");
+    }
+
+    hideSpinner() {
+        this.spinnerTarget.classList.add("hidden");
+    }
+
+    makeTagsCollapsible() {
+        const tagElements = this.contentTarget.querySelectorAll(".token.tag");
+
+        tagElements.forEach((tag) => {
+            const spanWrapper = document.createElement("span");
+            spanWrapper.classList.add("collapsible");
+            tag.parentNode.replaceChild(spanWrapper, tag);
+            spanWrapper.appendChild(tag);
+
+            spanWrapper.addEventListener("click", () => {
+                spanWrapper.classList.toggle("active");
+            });
         });
-        // Apply event listeners for collapsibles
-        const collapsibleItems = document.querySelectorAll('.collapsible');
-        collapsibleItems.forEach(item => {
-          item.addEventListener('click', () => {
-            item.classList.toggle('active');
-          });
-        });
+    }
 
     async loadPrism() {
-        // Load the Prism.js CSS
-        await loadLink({
-            rel: "stylesheet",
-            href: "https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-tomorrow.min.css",
-        });
+        const prismCss =
+            "https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-tomorrow.min.css";
+        const prismJs =
+            "https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js";
 
-        // Load the Prism.js script
-        await loadScript({
-            async: true,
-            defer: true,
-            src: "https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js",
-        });
+        if (!document.querySelector(`link[href="${prismCss}"]`)) {
+            console.log("Loading prismCSS");
+            await loadLink({
+                rel: "stylesheet",
+                href: prismCss,
+            });
+        }
+
+        if (!document.querySelector(`script[src="${prismJs}"]`)) {
+            console.log("Loading prismJS");
+            await loadScript({
+                async: true,
+                defer: true,
+                src: prismJs,
+            });
+        }
+        console.log("PrismCSS and PrismJS loaded");
     }
 }

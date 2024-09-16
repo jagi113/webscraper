@@ -8,7 +8,40 @@
         data-highlight-content-value="{{ html_response }}" 
         class="text-xs font-light z-0 overflow-auto p-3"
     >
+        <div data-highlight-target="spinner" class="hidden flex flex-col justify-center items-center">
+            <svg class="animate-spin h-12 w-12 text-blue-500" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0116 0h-2a6 6 0 10-12 0H4z"></path>
+            </svg>
+            <div class="text-base font-medium p-3 flex justify-between items-center">Loading...</div>
+        </div>
         <div data-highlight-target="content"></div>
     </div>
+</div>
+
+
+<form id="component_form" method="GET" action="{% url 'find_component' project.id %}" class="flex flex-row items-center align-middle w-full my-8 gap-8">
+    <div class="text-lg text-gray-600 font-medium min-w-fit align-middle"> <!-- Set flex-none to prevent resizing -->
+        Component ID path
+    </div>
+    <div class="flex-grow"> <!-- Set flex-grow to fill remaining space -->
+        <input 
+            id="component_path"
+            name="component_path"
+            class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
+            {% if project.component_path %}
+                value= {{ project.component_path }}
+            {% else %}
+                placeholder={% if project.selector_type == "CSS" %}"div.content > div.article > a.read-more" {% elif project.selector_type == "xPath" %} "//div[@class='content']/div[@class='article']/a[@class='read-more']" {% endif %}
+            {% endif %}    
+        >
+    </div>
+    
+    <button type="submit" class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium">
+        Find Components
+    </button>
+</form>
+
+<div id="component_response" class="my-8">
 </div>
 
