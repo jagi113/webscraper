@@ -30,4 +30,10 @@ urlpatterns = [
         views.ScrapeMainPage.as_view(),
         name="scrape-main-page",
     ),
+    path(
+        "<int:project_id>/find_component/",
+        views.FindComponent.as_view(),
+        name="find_component",
+    ),
+
 ]

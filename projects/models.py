@@ -18,7 +18,7 @@ class Project(models.Model):
     name = models.CharField(max_length=1023, default="", blank=True, null=True)
     number_of_pages = models.IntegerField(default=0)
     selector_type = models.CharField(max_length=10, choices=SELECTOR_CHOICES)
-    # component_path = models.CharField(max_length=1023)
+    component_path = models.CharField(max_length=1023, blank=True, null=True)
     fields = models.JSONField(default=default_fields)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
