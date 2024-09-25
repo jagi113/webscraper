@@ -4,6 +4,7 @@ from django.views import View
 
 from projects.models import Project
 from scrapers.request_scraper.page_scraper import PageScraper
+from scrapers.request_scraper.page_parser import PageParser
 from scrapers.request_scraper.selectors import (
     is_valid_xpath_selector,
     is_valid_css_selector,
@@ -89,6 +90,18 @@ class FindComponent(View):
         ):
             error_response = "Invalid XPath expression"
 
+        page_content = cache.get(f"{project.id}-{project.main_page_url}")
+        if not page_content:
+            print("Page content was lost")
+            try:
+                scraper = PageScraper()
+                page_content = scraper.fetch_html(project.main_page_url)
+                cache.set(
+                    f"{project.id}-{project.main_page_url}", page_content, timeout=1200
+                )
+            except Exception as e:
+                error_response += f"\nScraped page content was lost and during repetiteve scrape following error occured: \n{e}"
+
         if error_response is not None:
             return render(
                 request,
@@ -99,22 +112,25 @@ class FindComponent(View):
         project.component_path = component_path
         project.save()
 
+        parser = PageParser()
+        kwargs = (
+            {"css_selector": project.component_path}
+            if project.selector_type == "CSS"
+            else {"xpath_selector": project.component_path}
+        )
+        try:
+            component_response = parser.parse(html_content=page_content, **kwargs)
+        except Exception as e:
+            error_response = f"While parsing html content for components following error occured: \n{e}"
+
+        print(component_response)
+
         return render(
             request,
             "webscraper/partial/_component_response.html",
-            {"project": project, "component_response": component_path},
+            {
+                "project": project,
+                "component_response": component_response,
+                "error_response": error_response,
+            },
         )
-
-        # return HttpResponse("Invalid request method.")
-
-        # try:
-        #     scraper = MainPageScraper(main_website)
-        #     response = scraper.get_html_content()
-        # except Exception as e:
-        #     response = "Error while scraping"
-
-        # return render(
-        #     request,
-        #     "webscraper/partial/_response.html",
-        #     {"main_website": main_website, "html_response": response},
-        # )

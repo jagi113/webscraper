@@ -8,13 +8,7 @@
         data-highlight-content-value="{{ html_response }}" 
         class="text-xs font-light z-0 overflow-auto p-3"
     >
-        <div data-highlight-target="spinner" class="hidden flex flex-col justify-center items-center">
-            <svg class="animate-spin h-12 w-12 text-blue-500" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0116 0h-2a6 6 0 10-12 0H4z"></path>
-            </svg>
-            <div class="text-base font-medium p-3 flex justify-between items-center">Loading...</div>
-        </div>
+        {% include 'webscraper/components/elements/spinner.html' %}
         <div data-highlight-target="content"></div>
     </div>
 </div>

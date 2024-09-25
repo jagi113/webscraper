@@ -5,13 +5,15 @@
             {% include 'webscraper/components/copy_button.html' with value=html_response %}  
         </div>
         {% if component_response %}
-            <div 
-                data-controller="highlight" 
-                data-highlight-content-value="{{ component_response}}" 
-                class="text-xs font-light z-0 overflow-auto p-3"
-            >
-                <div data-highlight-target="content"></div>
-            </div>
+                <div 
+                    data-controller="highlight" 
+                    data-highlight-content-value="{{ component_response }}" 
+                    class="text-xs font-light z-0 overflow-auto p-3"
+                >
+                    {% include 'webscraper/components/elements/spinner.html' %}
+                    <div data-highlight-target="content"></div>
+
+                </div>
         {% elif error_response %}
             <div class="text-xs font-bold z-0 overflow-auto p-3 text-red-500">
                 {{ error_response }}
