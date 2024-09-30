@@ -31,9 +31,18 @@ urlpatterns = [
         name="scrape-main-page",
     ),
     path(
-        "<int:project_id>/find_component/",
+        "<int:project_id>/find-component/",
         views.FindComponent.as_view(),
         name="find_component",
     ),
-
+    path(
+        "<int:project_id>/find-field-value/",
+        views.FindFieldValue.as_view(),
+        name="find_field_value",
+    ),
+    path(
+        "<int:project_id>/find-field-value/<int:field_id>",
+        views.FindFieldValue.as_view(),
+        name="find_field_value",
+    ),
 ]

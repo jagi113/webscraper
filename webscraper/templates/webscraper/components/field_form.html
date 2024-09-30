@@ -1,0 +1,121 @@
+<form 
+    method="POST"
+    {% if field.id %} 
+        id="field_{{field.id}}_form" 
+        action="{% url 'find_field_value' project.id field.id %}" 
+    {% else %}
+        id="new_field_form" 
+        action="{% url 'find_field_value' project.id %}" 
+    {% endif %}
+    class="flex flex-col items-center align-middle w-full my-8 gap-4"
+>
+    {% csrf_token %}
+    <div class="flex flex-row items-center align-middle w-full gap-8">
+        <div class="text-lg text-gray-600 font-medium w-1/4 min-w-fit align-middle ">
+            Field name
+        </div>
+        <div class="flex-grow"> 
+            <input 
+                id="field_name"
+                name="field_name"
+                class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
+                {% if project.field.name %}
+                    value= {{ field.name }}
+                {% else %}
+                    placeholder="Enter a field name"
+                {% endif %}    
+            >
+        </div>
+    </div>
+    <div class="flex flex-row items-center align-middle w-full gap-8">
+        <div class="text-lg text-gray-600 font-medium w-1/4 min-w-fit align-middle">
+            Desired value
+        </div>
+        <div class="flex-grow">
+            <input 
+                id="field_expected_value"
+                name="field_expected_value"
+                class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
+                {% if field.value %}
+                    value= {{ field.expected_value }}
+                {% else %}
+                    placeholder="Enter desired value found in the FIRST component"
+                {% endif %}    
+            >
+        </div>
+    </div>
+    <div class="flex flex-row items-center align-middle w-full gap-8">
+        <div class="text-lg text-gray-600 font-medium w-1/4 min-w-fit align-middle">
+            Html type of desired value
+        </div>
+        <div class="flex-grow">
+            <input 
+                id="html_type_of_value_input"
+                name="html_type_of_value"
+                class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
+                {% if field.value %}
+                    value= {{ field.html_type_of_value }}
+                {% else %}
+                    placeholder="Enter desired value found in the FIRST component (Optional)"
+                {% endif %}    
+            >
+        </div>
+    </div>
+    
+    <button type="submit" class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium">
+        Check
+    </button>
+</form>
+<div id="field_{{field.id}}_values" class="flex flex-column lg:flex-row">
+    {% if field.value.0 and field.selector %}
+        <div class=" flex flex-grow">
+            <div class="text-lg text-gray-600 font-medium min-w-fit align-middle">
+                Found value
+            </div>
+            <div class="flex-grow">
+                <div 
+                    id="field_{{field.id}}_value_result"
+                    class="w-full p-3 min-w-96" 
+                        {{field.value}}
+                >
+            </div>
+        </div>
+        <div class=" flex flex-grow">
+            <div class="text-lg text-gray-600 font-medium min-w-fit align-middle">
+                Selector
+            </div>
+            <div class="flex-grow">
+                <div 
+                    id="field_{{field.id}}_value_result"
+                    class="w-full p-3 min-w-96 " 
+                        {{field.selector}}
+                >
+            </div>
+        </div>
+        {% comment %} <form id="{{field.id}}" method="POST" action="{% url 'add-field' project.id field.id %}" class="flex flex-row items-center align-middle w-full my-8 gap-8"> 
+            <input id="field_{{field.id}}_name" hidden value= {{ project.field.name }}>
+            <input id="field_{{field.id}}_selector" hidden value= {{ project.field.selector }}> 
+            <button type="submit" class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium">
+                Save field
+            </button>
+        </form> {% endcomment %}
+    {% endif %}
+    {% if field.values %}
+        {% for value in field.values %}
+            <div>{{value}}</div>
+        {% endfor %}
+    {% elif field_parsing_error %}
+        <div>{{field_parsing_error}}</div>
+    {% endif %}
+</div> 
+{% if error_response %}
+    <div class="font-bold z-0 overflow-auto p-3 text-red-500">
+        {{ error_response }}
+    </div>
+{% endif %}
+
+{% comment %} <form id="{{field.id}}" method="GET" action="{% url 'remove-field' project.id field.id %}" class="flex flex-row items-center align-middle w-full my-8 gap-8">   
+    <button type="submit" class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium">
+        Remove field
+    </button>
+</form> {% endcomment %}

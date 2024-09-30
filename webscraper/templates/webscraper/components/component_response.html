@@ -1,29 +1,34 @@
 
-    <div id="component_response" class="w-full bg-prism-tomorrow-bg text-gray-100 flex flex-col rounded-sm h-fit max-h-96 lg:max-h-[600px] xl:max-h-[800px]">
-        <div class="text-base font-medium p-3 flex justify-between items-center">
-            <div>Source: {{ project.component_path }}</div>
-            {% include 'webscraper/components/copy_button.html' with value=html_response %}  
-        </div>
-        {% if component_response %}
-                <div 
-                    data-controller="highlight" 
-                    data-highlight-content-value="{{ component_response }}" 
-                    class="text-xs font-light z-0 overflow-auto p-3"
-                >
-                    {% include 'webscraper/components/elements/spinner.html' %}
-                    <div data-highlight-target="content"></div>
-
-                </div>
-        {% elif error_response %}
-            <div class="text-xs font-bold z-0 overflow-auto p-3 text-red-500">
-                {{ error_response }}
-            </div>
-        {% else %}
-            <svg class="animate-spin h-5 w-5 mr-3 ..." viewBox="0 0 24 24">
-                
-            </svg>
-        {% endif %}
+<div id="component_response" class="w-full bg-prism-tomorrow-bg text-gray-100 flex flex-col rounded-sm h-fit max-h-96 lg:max-h-[600px] xl:max-h-[800px]">
+    <div class="text-base font-medium p-3 flex justify-between items-center">
+        <div>Source: {{ project.component_path }}</div>
+        {% include 'webscraper/components/copy_button.html' with value=html_response %}  
     </div>
+    {% if component_response %}
+            <div 
+                data-controller="highlight" 
+                data-highlight-content-value="{{ component_response }}" 
+                class="text-xs font-light z-0 overflow-auto p-3"
+            >
+                {% include 'webscraper/components/elements/spinner.html' %}
+                <div data-highlight-target="content"></div>
+
+            </div>
+    {% elif error_response %}
+        <div class="text-xs font-bold z-0 overflow-auto p-3 text-red-500">
+            {{ error_response }}
+        </div>
+    {% else %}
+        <svg class="animate-spin h-5 w-5 mr-3 ..." viewBox="0 0 24 24">
+            
+        </svg>
+    {% endif %}
+</div>
+
+{% if component_response %}
+    {% include 'webscraper/components/field_form.html' %}
+
+{% endif %}
 
 
 

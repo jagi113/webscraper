@@ -1,0 +1,57 @@
+<turbo-stream target="field_{{field.id}}_values" action="update">
+    <template>
+        <div class="flex flex-col items-center align-middle w-full my-8 gap-4">
+            {% if field.selector %}
+                <div class="flex flex-row items-center align-middle w-full gap-8">
+                    <div class="text-lg text-gray-600 font-medium w-1/4 min-w-fit align-middle ">
+                        Selector
+                    </div>
+                    <div class="flex-grow">
+                        <div 
+                            id="field_{{field.id}}_value_result"
+                            class="w-full min-w-96 " 
+                        >
+                                {{field.selector}}
+                        </div>
+                    </div>
+                </div>
+                {% comment %} <form id="{{field.id}}" method="POST" action="{% url 'add-field' project.id field.id %}" class="flex flex-row items-center align-middle w-full my-8 gap-8"> 
+                    <input id="field_{{field.id}}_name" hidden value= {{ project.field.name }}>
+                    <input id="field_{{field.id}}_selector" hidden value= {{ project.field.selector }}> 
+                    <button type="submit" class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium">
+                        Save field
+                    </button>
+                </form> {% endcomment %}
+            {% endif %}
+            {% if field.values %}
+                <div class="flex flex-row align-text-top w-full gap-8">
+                    <div class="text-lg text-gray-600 font-medium w-1/4 min-w-fit">
+                        Found results on the page
+                    </div>
+                    <div class="flex flex-col flex-grow">
+                        {% for value in field.values %}
+                            <div class="w-full text-wrap text-base text-gray-600 italic">{{value}}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% elif field_parsing_error %}
+                <div>{{field_parsing_error}}</div>
+            {% endif %}
+            </div>
+    </template>
+</turbo-stream>
+
+<turbo-stream target="html_type_of_value_input" action="replace">
+    <template>
+        <input 
+            id="html_type_of_value_input"
+            name="html_type_of_value"
+            class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
+            {% if field.html_type_of_value %}
+                value= {{ field.html_type_of_value }}
+            {% else %}
+                placeholder="Enter desired value found in the FIRST component (Optional)"
+            {% endif %}    
+        >
+    </template>
+</turbo-stream>
