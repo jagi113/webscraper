@@ -1,6 +1,6 @@
 <form 
     method="POST"
-    {% if field.id %} 
+    {% if field.id is not None %} 
         id="field_{{field.id}}_form" 
         action="{% url 'find_field_value' project.id field.id %}" 
     {% else %}
@@ -28,45 +28,61 @@
         </div>
     </div>
     <div class="flex flex-row items-center align-middle w-full gap-8">
-        <div class="text-lg text-gray-600 font-medium w-1/4 min-w-fit align-middle">
-            Desired value
+        <div class=" flex text-lg text-gray-600 font-medium w-1/4 min-w-fit items-baseline">
+            Selector path
+            <div 
+                class="text-sm font-normal italic ml-3 cursor-pointer flex flex-col justify-end "
+                onclick="document.getElementById('{% if field.id is not None %}find_field_{{field.id}}_selector{% else %}new_field_selector{% endif %}').classList.remove('hidden');"
+            > Help me to find a selector</div>
         </div>
         <div class="flex-grow">
             <input 
-                id="field_expected_value"
-                name="field_expected_value"
-                class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
-                {% if field.value %}
-                    value= {{ field.expected_value }}
+                {% if field.id %} 
+                    id="field_{{field.id}}_value_selector"
                 {% else %}
-                    placeholder="Enter desired value found in the FIRST component"
+                    id="new_field_value_selector"
+                {% endif %}
+                name="value_selector"
+                class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
+                {% if field.value_selector %}
+                    value={{ field.value_selector }}
+                {% else %}
+                    placeholder="Enter path to the field value you want to scrape from components."
                 {% endif %}    
             >
         </div>
     </div>
     <div class="flex flex-row items-center align-middle w-full gap-8">
-        <div class="text-lg text-gray-600 font-medium w-1/4 min-w-fit align-middle">
-            Html type of desired value
+        <div class=" flex text-lg text-gray-600 font-medium w-1/4 min-w-fit items-baseline">
+            Value Attribute
         </div>
         <div class="flex-grow">
             <input 
-                id="html_type_of_value_input"
-                name="html_type_of_value"
-                class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
-                {% if field.value %}
-                    value= {{ field.html_type_of_value }}
+                {% if field.id is not None %} 
+                    id="field_{{field.id}}_value_attribute"
                 {% else %}
-                    placeholder="Enter desired value found in the FIRST component (Optional)"
+                    id="new_field_value_attribute"
+                {% endif %}
+                name="value_attribute"
+                class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
+                {% if field.html_type_of_value %}
+                    value={{field.html_type_of_value}}
+                {% else %}
+                    placeholder="Enter attribute of the field value you want to scrape from components."
                 {% endif %}    
             >
         </div>
     </div>
-    
-    <button type="submit" class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium">
+    <button 
+        type="submit" 
+        class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium"
+    >
         Check
     </button>
 </form>
-<div id="field_{{field.id}}_values" class="flex flex-column lg:flex-row">
+
+{% include 'webscraper/components/field_selector_form.html' %}
+<div id="{% if field.id is not None %}field_{{field.id}}_values{% else %}field_values_on_page{% endif %}" class="flex flex-column lg:flex-row">
     {% if field.value.0 and field.selector %}
         <div class=" flex flex-grow">
             <div class="text-lg text-gray-600 font-medium min-w-fit align-middle">
@@ -74,13 +90,13 @@
             </div>
             <div class="flex-grow">
                 <div 
-                    id="field_{{field.id}}_value_result"
+                    {% comment %} id="field_{{field.id}}_value_result" {% endcomment %}
                     class="w-full p-3 min-w-96" 
                         {{field.value}}
                 >
             </div>
         </div>
-        <div class=" flex flex-grow">
+        {% comment %} <div class=" flex flex-grow">
             <div class="text-lg text-gray-600 font-medium min-w-fit align-middle">
                 Selector
             </div>
@@ -91,7 +107,7 @@
                         {{field.selector}}
                 >
             </div>
-        </div>
+        </div> {% endcomment %}
         {% comment %} <form id="{{field.id}}" method="POST" action="{% url 'add-field' project.id field.id %}" class="flex flex-row items-center align-middle w-full my-8 gap-8"> 
             <input id="field_{{field.id}}_name" hidden value= {{ project.field.name }}>
             <input id="field_{{field.id}}_selector" hidden value= {{ project.field.selector }}> 
@@ -100,16 +116,10 @@
             </button>
         </form> {% endcomment %}
     {% endif %}
-    {% if field.values %}
-        {% for value in field.values %}
-            <div>{{value}}</div>
-        {% endfor %}
-    {% elif field_parsing_error %}
-        <div>{{field_parsing_error}}</div>
-    {% endif %}
+
 </div> 
-{% if error_response %}
-    <div class="font-bold z-0 overflow-auto p-3 text-red-500">
+{% if field_parsing_error %}
+    <div id="field_parsing_error_message" class="font-bold z-0 overflow-auto p-3 text-red-500">
         {{ error_response }}
     </div>
 {% endif %}

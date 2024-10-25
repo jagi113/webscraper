@@ -1,0 +1,50 @@
+<form method="POST"
+    {% if field.id is not None %} 
+        id="find_field_{{field.id}}_selector" 
+        action="{% url 'find_field_value_selector' project.id field.id %}"
+    {% else %}
+        id="new_field_selector" 
+        action="{% url 'find_field_value_selector' project.id %}"
+    {% endif %}
+    class="flex flex-col bg-gray-400 items-center align-middle w-full my-8 gap-4 p-8 rounded-lg italic hidden"
+>
+    {% csrf_token %}
+    <div class="flex flex-row items-center align-middle w-full gap-8">
+        <div class="text-lg text-gray-600 font-medium w-1/4 min-w-fit align-middle">
+            Desired value
+        </div>
+        <div class="flex-grow">
+            <input 
+                id="field_expected_value"
+                name="field_expected_value"
+                class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
+                {% if field.value %}
+                    value= {{ field.expected_value }}
+                {% else %}
+                    placeholder="Enter desired value found in the FIRST component"
+                {% endif %}    
+            >
+        </div>
+    </div>
+    <div class="flex flex-row items-center align-middle w-full gap-8">
+        <div class="text-lg text-gray-600 font-medium w-1/4 min-w-fit align-middle">
+            Html type of desired value
+        </div>
+        <div class="flex-grow">
+            <input 
+                id="html_type_of_value_input"
+                name="html_type_of_value"
+                class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
+                {% if field.value %}
+                    value= {{ field.html_type_of_value }}
+                {% else %}
+                    placeholder="Enter html attribute of the value (Optional if it is text, src, href or title)"
+                {% endif %}    
+            >
+        </div>
+    </div>
+    
+    <button type="submit" class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium">
+        Find the selector
+    </button>
+</form>

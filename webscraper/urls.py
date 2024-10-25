@@ -17,8 +17,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from webscraper import views
-from django.views.generic.base import RedirectView
+from . import views
 
 
 urlpatterns = [
@@ -44,5 +43,15 @@ urlpatterns = [
         "<int:project_id>/find-field-value/<int:field_id>",
         views.FindFieldValue.as_view(),
         name="find_field_value",
+    ),
+    path(
+        "<int:project_id>/find-field-value-selector/",
+        views.FindFieldValueSelector.as_view(),
+        name="find_field_value_selector",
+    ),
+    path(
+        "<int:project_id>/find-field-value-selector/<int:field_id>",
+        views.FindFieldValueSelector.as_view(),
+        name="find_field_value_selector",
     ),
 ]

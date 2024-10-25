@@ -12,6 +12,7 @@ from scrapers.request_scraper.selectors import (
 
 from webscraper.decorators import turbo_stream_response
 from webscraper.forms import MainWebsiteForm
+from webscraper.helper_functions import get_page_content
 
 # from scrapers.scrapy_scraper.spiders.page_scraper import PageScraper
 
@@ -88,16 +89,7 @@ class FindComponent(View):
         ):
             error_response = "Invalid XPath expression"
 
-        page_content = cache.get(f"{project.id}-{project.main_page_url}")
-        if not page_content:
-            try:
-                scraper = PageScraper()
-                page_content = scraper.fetch_html(project.main_page_url)
-                cache.set(
-                    f"{project.id}-{project.main_page_url}", page_content, timeout=1200
-                )
-            except Exception as e:
-                error_response += f"\nScraped page content was lost and during repetiteve scrape following error occured: \n{e}"
+        error_response, page_content = get_page_content(project)
 
         if error_response is not None:
             return render(
@@ -131,84 +123,14 @@ class FindComponent(View):
         )
 
 
-class FindFieldValue(View):
-    @turbo_stream_response
-    def get(self, request, project_id):
-        project = get_object_or_404(Project, id=project_id)
-        component_path = request.GET.get("component_path")
-
-        error_response = None
-        if not component_path or component_path == "":
-            error_response = "Component identificator is required"
-        elif project.selector_type == "CSS" and not is_valid_css_selector(
-            component_path
-        ):
-            error_response = "Invalid CSS selector"
-        elif project.selector_type == "xPath" and not is_valid_xpath_selector(
-            component_path
-        ):
-            error_response = "Invalid XPath expression"
-
-        page_content = cache.get(f"{project.id}-{project.main_page_url}")
-        if not page_content:
-            try:
-                scraper = PageScraper()
-                page_content = scraper.fetch_html(project.main_page_url)
-                cache.set(
-                    f"{project.id}-{project.main_page_url}", page_content, timeout=1200
-                )
-            except Exception as e:
-                error_response += f"\nScraped page content was lost and during repetiteve scrape following error occured: \n{e}"
-
-        if error_response is not None:
-            return render(
-                request,
-                "webscraper/partial/_component_error_response.html",
-                {"project": project, "error_response": error_response},
-            )
-
-        project.component_path = component_path
-        project.save()
-
-        parser = PageParser()
-        kwargs = (
-            {"css_selector": project.component_path}
-            if project.selector_type == "CSS"
-            else {"xpath_selector": project.component_path}
-        )
-        try:
-            component_response = parser.parse(html_content=page_content, **kwargs)
-        except Exception as e:
-            error_response = f"While parsing html content for components following error occured: \n{e}"
-
-        return render(
-            request,
-            "webscraper/partial/_component_response.html",
-            {
-                "project": project,
-                "component_response": component_response,
-                "error_response": error_response,
-            },
-        )
-
+class FindFieldValueSelector(View):
     @turbo_stream_response
     def post(self, request, project_id, field_id=None):
         project = get_object_or_404(Project, id=project_id)
-        field_name = request.POST.get("field_name")
         field_expected_value = request.POST.get("field_expected_value")
         html_type_of_value = request.POST.get("html_type_of_value")
-
-        page_content = cache.get(f"{project.id}-{project.main_page_url}")
         error_response = None
-        if not page_content:
-            try:
-                scraper = PageScraper()
-                page_content = scraper.fetch_html(project.main_page_url)
-                cache.set(
-                    f"{project.id}-{project.main_page_url}", page_content, timeout=1200
-                )
-            except Exception as e:
-                error_response = f"\nScraped page content was lost and during repetiteve scrape following error occured: \n{e}"
+        error_response, page_content = get_page_content(project)
 
         if error_response is not None:
             return render(
@@ -229,40 +151,108 @@ class FindFieldValue(View):
         except Exception as e:
             error_response = f"While parsing html content for components following error occured: \n{e}"
 
-        selector, value_html_type = parser.generate_selector(
-            component_response[0],
-            project.selector_type,
-            field_expected_value,
-            html_type_of_value,
+        for component in component_response:
+            selector, value_html_type = parser.generate_selector(
+                component,
+                project.selector_type,
+                field_expected_value,
+                html_type_of_value,
+            )
+            if selector:
+                break
+
+        if not selector:
+            error_response = f"Value {field_expected_value} was not found in the components. Try again!"
+        print(f"Selector found: {selector}")
+        print(value_html_type)
+        return render(
+            request,
+            "webscraper/partial/_find_selector_response.html",
+            {
+                "project": project,
+                "field": (
+                    {
+                        "id": field_id if field_id else None,
+                        "value_selector": selector if not error_response else None,
+                        "html_type_of_value": (
+                            value_html_type if not error_response else None
+                        ),
+                    }
+                ),
+                "field_parsing_error": error_response,
+            },
         )
 
+
+class FindFieldValue(View):
+    @turbo_stream_response
+    def post(self, request, project_id, field_id=None):
+        project = get_object_or_404(Project, id=project_id)
+        field_name = request.POST.get("field_name")
+        selector = request.POST.get("value_selector")
+        value_html_type = request.POST.get("value_attribute")
+        print(f"Selector is: {selector}")
+        print(f"Value html type is: {value_html_type}")
+        error_response = None
+        error_response, page_content = get_page_content(project)
+
+        if error_response is not None:
+            return render(
+                request,
+                "webscraper/partial/_field_error_response.html",
+                {"project": project, "error_response": error_response},
+            )
+
+        parser = PageParser()
+
         if selector:
-            kwargs = (
+            component_kwargs = (
+                {"css_selector": project.component_path}
+                if project.selector_type == "CSS"
+                else {"xpath_selector": project.component_path}
+            )
+            selector_kwargs = (
                 {"css_selector": selector}
                 if project.selector_type == "CSS"
                 else {"xpath_selector": selector}
             )
             try:
-                values = parser.get_values(
-                    html_content=page_content, value_attribute=value_html_type, **kwargs
-                )
+                values = []
+                for component in parser.parse(
+                    html_content=page_content, **component_kwargs
+                ):
+                    component_values = parser.get_values(
+                        html_content=component,
+                        value_attribute=value_html_type,
+                        **selector_kwargs,
+                    )
+                    values.append(component_values)
+
+                if all(not sublist for sublist in values):
+                    raise Exception(
+                        "No values were found. Try to make Selector more general."
+                    )
             except Exception as e:
-                error_response = f"While parsing html content for field value {field_expected_value} following error occured: \n{e}"
+                error_response = f"While parsing html content for field {field_name} following error occured: \n{e}"
         else:
-            error_response = f"Value {field_expected_value} was not found in the FIRST component. Try again!"
+            error_response = f"Selector Path for scraping value is required"
 
         return render(
             request,
             "webscraper/partial/_field_response.html",
             {
                 "project": project,
-                "field": {
-                    "id": field_id if field_id else "",
-                    "name": field_name,
-                    "values": values,
-                    "selector": selector,
-                    "html_type_of_value": value_html_type,
-                },
+                "field": (
+                    {
+                        "id": field_id if field_id else None,
+                        "name": field_name,
+                        "values": values,
+                        "selector": selector,
+                        "html_type_of_value": value_html_type,
+                    }
+                    if not error_response
+                    else None
+                ),
                 "field_parsing_error": error_response,
             },
         )
