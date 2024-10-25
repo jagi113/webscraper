@@ -2,10 +2,12 @@
     method="POST"
     {% if field.id is not None %} 
         id="field_{{field.id}}_form" 
-        action="{% url 'find_field_value' project.id field.id %}" 
+        name="field_{{field.id}}_form"
+        action="{% url 'field_form' project.id field.id %}" 
     {% else %}
         id="new_field_form" 
-        action="{% url 'find_field_value' project.id %}" 
+        name="new_field_form"
+        action="{% url 'field_form' project.id %}" 
     {% endif %}
     class="flex flex-col items-center align-middle w-full my-8 gap-4"
 >
@@ -16,14 +18,19 @@
         </div>
         <div class="flex-grow"> 
             <input 
-                id="field_name"
+                {% if field.id %} 
+                    id="field_{{field.id}}_name"
+                {% else %}
+                    id="new_field_name"
+                {% endif %}
                 name="field_name"
                 class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
                 {% if project.field.name %}
                     value= {{ field.name }}
                 {% else %}
                     placeholder="Enter a field name"
-                {% endif %}    
+                {% endif %}  
+                required  
             >
         </div>
     </div>
@@ -48,7 +55,8 @@
                     value={{ field.value_selector }}
                 {% else %}
                     placeholder="Enter path to the field value you want to scrape from components."
-                {% endif %}    
+                {% endif %}  
+                required  
             >
         </div>
     </div>
@@ -69,17 +77,31 @@
                     value={{field.html_type_of_value}}
                 {% else %}
                     placeholder="Enter attribute of the field value you want to scrape from components."
-                {% endif %}    
+                {% endif %}
+                required     
             >
         </div>
     </div>
-    <button 
-        type="submit" 
-        class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium"
-    >
-        Check
-    </button>
+    <div class="flex flex-row w-full items-center align-middle justify-center gap-4">
+        <button 
+            name="check_values" 
+            value="check_values"
+            type="submit" 
+            class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium"
+            >
+            Check Values
+        </button>
+        <button 
+            value="save_field"
+            name="save_field" 
+            value="submit"
+            class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium enabled:hover:border-gray-400 disabled:opacity-75"
+        >
+            Save Field
+        </button>
+    </div>
 </form>
+
 
 {% include 'webscraper/components/field_selector_form.html' %}
 <div id="{% if field.id is not None %}field_{{field.id}}_values{% else %}field_values_on_page{% endif %}" class="flex flex-column lg:flex-row">
