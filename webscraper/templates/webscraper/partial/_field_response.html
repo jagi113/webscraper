@@ -3,3 +3,14 @@
         {% include 'webscraper/components/field_response.html' with project=project field=field field_parsing_error=field_parsing_error %}
     </template>
 </turbo-stream>
+
+<turbo-stream target="find_field_selector_form" action="replace">
+    <template>
+        {% include 'webscraper/components/field_selector_form.html' with project=project field=field %}
+    </template>
+</turbo-stream>
+
+<turbo-stream target="field_parsing_error_message" action="update">
+    <template>
+    </template>
+</turbo-stream>

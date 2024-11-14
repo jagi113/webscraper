@@ -164,7 +164,7 @@ class FindFieldValueSelector(View):
                 "webscraper/partial/_field_error_response.html",
                 {"project": project, "error_response": error_response},
             )
-
+        print(attribute)
         return render(
             request,
             "webscraper/partial/_find_selector_response.html",
