@@ -3,8 +3,8 @@
         method="POST"
         id="check_save_field_form"
         name="field_form"
-        {% if field.name is not None %} 
-            action="{% url 'field_form' project.id field.name %}" 
+        {% if field.id is not None %} 
+            action="{% url 'field_form' project.id field.id %}" 
         {% else %}
             action="{% url 'field_form' project.id %}" 
         {% endif %}
@@ -17,8 +17,8 @@
             </div>
             <div class="flex-grow"> 
                 <input 
-                    {% if field.name %} 
-                        id="field_{{field.name}}_name"
+                    {% if field.id %} 
+                        id="field_{{field.id}}_name"
                     {% else %}
                         id="new_field_name"
                     {% endif %}
@@ -45,8 +45,8 @@
             </div>
             <div class="flex-grow">
                 <textarea 
-                    {% if field.name %} 
-                        id="field_{{ field.name }}_selector"
+                    {% if field.id %} 
+                        id="field_{{ field.id }}_selector"
                     {% else %}
                         id="new_field_selector"
                     {% endif %}
@@ -67,8 +67,8 @@
             </div>
             <div class="flex-grow">
                 <input 
-                    {% if field.name is not None %} 
-                        id="field_{{field.name}}_attribute"
+                    {% if field.id is not None %} 
+                        id="field_{{field.id}}_attribute"
                     {% else %}
                         id="new_field_attribute"
                     {% endif %}
@@ -103,8 +103,8 @@
         >
             Save Field
         </button>
-        {% if field.name %}
-            <form action="{% url 'delete_field' project.id field.name %}" method="POST">
+        {% if field.id %}
+            <form action="{% url 'delete_field' project.id field.id %}" method="POST">
                 {% csrf_token %}
                 <button 
                     type="submit"

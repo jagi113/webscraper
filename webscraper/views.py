@@ -183,12 +183,11 @@ class FindFieldValueSelector(View):
 
 class FieldForm(View):
     @turbo_stream_response
-    def get(self, request, project_id, field_name=None):
+    def get(self, request, project_id, field_id=None):
         project = get_object_or_404(Project, id=project_id)
         field = None
-        if field_name and field_name in project.fields["fields"]:
-            field = project.fields["fields"][field_name]
-            field["name"] = field_name
+        if field_id and field_id in project.fields["fields"]:
+            field = project.fields["fields"][field_id]
         return render(
             request,
             "webscraper/partial/_field_form.html",
@@ -199,7 +198,7 @@ class FieldForm(View):
         )
 
     @turbo_stream_response
-    def post(self, request, project_id, field_name=None):
+    def post(self, request, project_id, field_id=None):
         project = get_object_or_404(Project, id=project_id)
         field_name = request.POST.get("field_name")
         selector = request.POST.get("selector")
@@ -275,7 +274,7 @@ class FieldForm(View):
             )
 
         # for saving / updating field
-        project.add_field(field_name, selector, attribute)
+        project.add_field(field_name, selector, attribute, field_id)
         return render(
             request,
             "webscraper/partial/_fields_updated.html",
@@ -288,9 +287,9 @@ class FieldForm(View):
 
 class DeleteField(View):
     @turbo_stream_response
-    def post(self, request, project_id, field_name):
+    def post(self, request, project_id, field_id):
         project = get_object_or_404(Project, id=project_id)
-        project.remove_field(field_name)
+        project.remove_field(field_id)
         return render(
             request,
             "webscraper/partial/_fields_updated.html",

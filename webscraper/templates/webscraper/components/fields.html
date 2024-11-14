@@ -1,4 +1,4 @@
-<div     id="{{ project.component_path }}_fields">
+<div id="{{ project.component_path }}_fields">
 <div 
     class="flex flex-col items-center align-middle w-full gap-8 my-8"
 
@@ -9,12 +9,12 @@
         </div>
         <div class="flex flex-wrap justify-start gap-4">
             {% if fields.items %}
-                {% for field_name, field in fields.items %}
+                {% for _, field in fields.items %}
                     <a 
-                        href="{% url 'field_form' project.id field_name %}"
-                        class="min-w-36 px-3 py-1 m-3 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium"
+                        href="{% url 'field_form' project.id field.id %}"
+                        class="min-w-fit px-3 py-1 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium"
                         >
-                        {{ field_name }}
+                        {{ field.name }}
                     </a>
                 {% endfor %}
             {% else %}

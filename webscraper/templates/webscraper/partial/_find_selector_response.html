@@ -1,8 +1,8 @@
-<turbo-stream target="{% if field.name %}field_{{field.name}}_selector{% else %}new_field_selector{% endif %}" action="replace">
+<turbo-stream target="{% if field.id %}field_{{field.id}}_selector{% else %}new_field_selector{% endif %}" action="replace">
     <template>
         <textarea 
-            {% if field.name %} 
-                id="field_{{ field.name }}_selector"
+            {% if field.id %} 
+                id="field_{{ field.id }}_selector"
             {% else %}
                 id="new_field_selector"
             {% endif %}
@@ -20,11 +20,11 @@
     </template>
 </turbo-stream>
 
-<turbo-stream target="{% if field.name %}field_{{field.name}}_attribute{% else %}new_field_attribute{% endif %}" action="replace">
+<turbo-stream target="{% if field.id %}field_{{field.id}}_attribute{% else %}new_field_attribute{% endif %}" action="replace">
     <template>
         <input 
-            {% if field.name %} 
-                id="field_{{field.name}}_attribute"
+            {% if field.id %} 
+                id="field_{{field.id}}_attribute"
             {% else %}
                 id="new_field_attribute"
             {% endif %}

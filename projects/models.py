@@ -1,6 +1,11 @@
 from django.db import models
 
 # from django.contrib.auth.models import User
+import uuid
+
+
+def generate_id():
+    return str(uuid.uuid4())
 
 
 def default_fields():
@@ -9,11 +14,11 @@ def default_fields():
 
 # "fields":{
 # field_id:
-# {"field_name": field_name
-# "field_selector": field_selector,
-# "field_attribute": field_attribute,
-# "field_value_type": field_value_type,
-# "additional_value_processes": [trim_chars, split]?
+# {"name": field_name
+# "selector": field_selector,
+# "attribute": field_attribute,
+# "value_type": field_value_type,
+# "additional_value_processes": [trim_chars, split, range_of_results]?
 # }
 # }
 
@@ -35,7 +40,7 @@ class Project(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     # def __str__(self):
-    #     return f"Scraping Project for {self.user.username}"
+    #     return f"Scraping Project {self.name} for {self.user.username}"
 
     def save(self, *args, **kwargs):
         if not self.name:
@@ -44,10 +49,10 @@ class Project(models.Model):
 
     def add_field(
         self,
-        field_name,
+        name,
         selector,
         attribute,
-        field_id=None,
+        id=None,
         value_type=None,
         additional_value_processes=None,
     ):
@@ -55,7 +60,12 @@ class Project(models.Model):
         if not isinstance(fields_data, dict):
             fields_data = {}
 
-        fields_data[field_name] = {
+        if not id:
+            id = generate_id()
+
+        fields_data[id] = {
+            "id": id,
+            "name": name,
             "selector": selector,
             "attribute": attribute,
             "value_type": value_type,
@@ -69,14 +79,12 @@ class Project(models.Model):
         # Save the instance to apply changes
         self.save()
 
-    def remove_field(self, field_name):
+    def remove_field(self, id):
         fields_data = self.fields["fields"]
         if not isinstance(fields_data, dict):
             fields_data = {}
 
-        if field_name in fields_data:
-            del fields_data[field_name]
+        if id in fields_data:
+            del fields_data[id]
             self.fields["fields"] = fields_data
             self.save()
-        else:
-            print(f"Field '{field_name}' not found.")

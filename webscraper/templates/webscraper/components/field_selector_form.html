@@ -1,7 +1,7 @@
 <form method="POST"
     id="find_field_selector_form" 
-    {% if field.name is not None %} 
-        action="{% url 'find_field_selector' project.id field.name %}"
+    {% if field.id is not None %} 
+        action="{% url 'find_field_selector' project.id field.id %}"
     {% else %}
         action="{% url 'find_field_selector' project.id %}"
     {% endif %}

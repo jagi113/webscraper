@@ -40,7 +40,7 @@ urlpatterns = [
         name="field_form",
     ),
     path(
-        "<int:project_id>/field-form/<str:field_name>/",
+        "<int:project_id>/field-form/<str:field_id>/",
         views.FieldForm.as_view(),
         name="field_form",
     ),
@@ -50,12 +50,12 @@ urlpatterns = [
         name="find_field_selector",
     ),
     path(
-        "<int:project_id>/find-field-value-selector/<str:field_name>/",
+        "<int:project_id>/find-field-value-selector/<str:field_id>/",
         views.FindFieldValueSelector.as_view(),
         name="find_field_selector",
     ),
     path(
-        "<int:project_id>/delete-field/<str:field_name>/",
+        "<int:project_id>/delete-field/<str:field_id>/",
         views.DeleteField.as_view(),
         name="delete_field",
     ),
