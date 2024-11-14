@@ -1,10 +1,9 @@
 <form method="POST"
-    {% if field.id is not None %} 
-        id="find_field_{{field.id}}_selector" 
-        action="{% url 'find_field_value_selector' project.id field.id %}"
+    id="find_field_selector_form" 
+    {% if field.name is not None %} 
+        action="{% url 'find_field_selector' project.id field.name %}"
     {% else %}
-        id="new_field_selector" 
-        action="{% url 'find_field_value_selector' project.id %}"
+        action="{% url 'find_field_selector' project.id %}"
     {% endif %}
     class="flex flex-col bg-gray-400 items-center align-middle w-full my-8 gap-4 p-8 rounded-lg italic hidden"
 >
@@ -32,11 +31,11 @@
         </div>
         <div class="flex-grow">
             <input 
-                id="html_type_of_value_input"
-                name="html_type_of_value"
+                id="attribute_input"
+                name="attribute"
                 class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
                 {% if field.value %}
-                    value= {{ field.html_type_of_value }}
+                    value= {{ field.attribute }}
                 {% else %}
                     placeholder="Enter html attribute of the value (Optional if it is text, src, href or title)"
                 {% endif %}    

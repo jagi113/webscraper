@@ -16,11 +16,9 @@ class PageParser:
         else:
             raise ValueError("Either css_selector or xpath_selector must be provided")
 
-    def generate_selector(
-        self, html_content, selector_type, value, html_type_of_value=None
-    ):
+    def generate_selector(self, html_content, selector_type, value, attribute=None):
         selector = Selector(text=html_content)
-        print(html_type_of_value)
+        print(attribute)
 
         # Unescape the value to match encoded HTML content
         normalized_value = html.unescape(value.strip())
@@ -28,25 +26,25 @@ class PageParser:
         path_parts = []
         is_attribute = None
 
-        if html_type_of_value == "text" or html_type_of_value == "text()":
+        if attribute == "text" or attribute == "text()":
             element = selector.xpath(
                 f"//*[contains(normalize-space(text()), '{normalized_value}')]"
             )
             is_attribute = "text()"
-        elif html_type_of_value:
-            print("html_type_of_value identified and trying to find the element")
+        elif attribute:
+            print("attribute identified and trying to find the element")
 
-            if not html_type_of_value.startswith("@"):
-                html_type_of_value = f"@{html_type_of_value}"
+            if not attribute.startswith("@"):
+                attribute = f"@{attribute}"
 
             # Use contains to match partially if necessary
             element = selector.xpath(
-                f"//*[{html_type_of_value}='{normalized_value}'] | //*[{html_type_of_value}[contains(., '{normalized_value}')]]"
+                f"//*[{attribute}='{normalized_value}'] | //*[{attribute}[contains(., '{normalized_value}')]]"
             )
 
-            print("Element found based on html_type_of_value")
+            print("Element found based on attribute")
             print(element)
-            is_attribute = html_type_of_value
+            is_attribute = attribute
             print(f"Attribute is: {is_attribute}")
         else:
             # Check across multiple attributes, using contains for partial match
@@ -109,15 +107,15 @@ class PageParser:
             raise ValueError("Invalid selector type. Please use 'css' or 'xpath'.")
 
     def get_values(
-        self, html_content, value_attribute, css_selector=None, xpath_selector=None
+        self, html_content, attribute, css_selector=None, xpath_selector=None
     ):
         selector = Selector(text=html_content)
         print(css_selector)
-        print(value_attribute)
+        print(attribute)
 
         if css_selector:
-            return selector.css(css_selector).xpath(value_attribute).getall()
+            return selector.css(css_selector).xpath(attribute).getall()
         elif xpath_selector:
-            return selector.xpath(xpath_selector).xpath(value_attribute).getall()
+            return selector.xpath(xpath_selector).xpath(attribute).getall()
         else:
             raise ValueError("Either css_selector or xpath_selector must be provided")

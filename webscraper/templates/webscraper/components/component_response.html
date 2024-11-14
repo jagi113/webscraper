@@ -26,8 +26,7 @@
 </div>
 
 {% if component_response %}
-    {% include 'webscraper/components/field_form.html' %}
-
+    {% include 'webscraper/components/fields.html' with project=project fields=fields %}
 {% endif %}
 
 

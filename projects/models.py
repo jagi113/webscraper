@@ -4,7 +4,18 @@ from django.db import models
 
 
 def default_fields():
-    return {"fields": {}}  # "fields":{"field_name":"field_selector"}
+    return {"fields": {}}
+
+
+# "fields":{
+# field_id:
+# {"field_name": field_name
+# "field_selector": field_selector,
+# "field_attribute": field_attribute,
+# "field_value_type": field_value_type,
+# "additional_value_processes": [trim_chars, split]?
+# }
+# }
 
 
 class Project(models.Model):
@@ -30,3 +41,42 @@ class Project(models.Model):
         if not self.name:
             self.name = self.main_page_url
         super().save(*args, **kwargs)
+
+    def add_field(
+        self,
+        field_name,
+        selector,
+        attribute,
+        field_id=None,
+        value_type=None,
+        additional_value_processes=None,
+    ):
+        fields_data = self.fields["fields"]
+        if not isinstance(fields_data, dict):
+            fields_data = {}
+
+        fields_data[field_name] = {
+            "selector": selector,
+            "attribute": attribute,
+            "value_type": value_type,
+            "additional_value_processes": additional_value_processes or [],
+        }
+        print(fields_data)
+
+        # Set the updated fields data back to the model instance
+        self.fields["fields"] = fields_data
+
+        # Save the instance to apply changes
+        self.save()
+
+    def remove_field(self, field_name):
+        fields_data = self.fields["fields"]
+        if not isinstance(fields_data, dict):
+            fields_data = {}
+
+        if field_name in fields_data:
+            del fields_data[field_name]
+            self.fields["fields"] = fields_data
+            self.save()
+        else:
+            print(f"Field '{field_name}' not found.")

@@ -1,0 +1,43 @@
+<div     id="{{ project.component_path }}_fields">
+<div 
+    class="flex flex-col items-center align-middle w-full gap-8 my-8"
+
+>
+    <div class="w-full flex flex-row gap-8">
+        <div class="flex text-lg text-gray-600 font-medium w-1/8 min-w-fit">
+            Fields:   
+        </div>
+        <div class="flex flex-wrap justify-start gap-4">
+            {% if fields.items %}
+                {% for field_name, field in fields.items %}
+                    <a 
+                        href="{% url 'field_form' project.id field_name %}"
+                        class="min-w-36 px-3 py-1 m-3 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium"
+                        >
+                        {{ field_name }}
+                    </a>
+                {% endfor %}
+            {% else %}
+                <div class="flex font-medium text-lg text-gray-600">
+                    No saved fields
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="flex justify-center">
+        <a 
+            href="{% url 'field_form' project.id %}"
+            class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium"
+        >
+            Add New Field
+        </a>
+    </div>
+</div>
+<div id="field_form" >
+</div>
+{% include 'webscraper/components/field_selector_form.html' %}
+<div id="field_values_on_page" class="flex flex-column lg:flex-row">
+</div> 
+<div id="field_parsing_error_message" class="font-bold z-0 overflow-auto p-3 text-red-500">
+</div>
+</div>

@@ -1,0 +1,26 @@
+<turbo-stream target="field_form" action="replace">
+    <template>
+        {% include 'webscraper/components/field_form.html' with project=project field=field %}
+    </template>
+</turbo-stream>
+
+<turbo-stream target="find_field_selector_form" action="replace">
+    <template>
+        {% include 'webscraper/components/field_selector_form.html' with project=project field=field %}
+    </template>
+</turbo-stream>
+
+<turbo-stream target="field_parsing_error_message" action="update">
+    <template>
+    </template>
+</turbo-stream>
+
+<turbo-stream target="field_values_on_page" action="update">
+    <template>
+    </template>
+</turbo-stream>
+
+<turbo-stream target="field_parsing_error_message" action="update">
+    <template>
+    </template>
+</turbo-stream>

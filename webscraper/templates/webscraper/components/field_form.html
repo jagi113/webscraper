@@ -1,89 +1,92 @@
-<form 
-    method="POST"
-    {% if field.id is not None %} 
-        id="field_{{field.id}}_form" 
-        name="field_{{field.id}}_form"
-        action="{% url 'field_form' project.id field.id %}" 
-    {% else %}
-        id="new_field_form" 
-        name="new_field_form"
-        action="{% url 'field_form' project.id %}" 
-    {% endif %}
-    class="flex flex-col items-center align-middle w-full my-8 gap-4"
->
-    {% csrf_token %}
-    <div class="flex flex-row items-center align-middle w-full gap-8">
-        <div class="text-lg text-gray-600 font-medium w-1/4 min-w-fit align-middle ">
-            Field name
+<div id="field_form" >
+    <form 
+        method="POST"
+        id="check_save_field_form"
+        name="field_form"
+        {% if field.name is not None %} 
+            action="{% url 'field_form' project.id field.name %}" 
+        {% else %}
+            action="{% url 'field_form' project.id %}" 
+        {% endif %}
+        class="flex flex-col items-center align-middle w-full my-8 gap-4"
+    >
+        {% csrf_token %}
+        <div class="flex flex-row items-center align-middle w-full gap-8">
+            <div class="text-lg text-gray-600 font-medium w-1/4 min-w-fit align-middle ">
+                Field name
+            </div>
+            <div class="flex-grow"> 
+                <input 
+                    {% if field.name %} 
+                        id="field_{{field.name}}_name"
+                    {% else %}
+                        id="new_field_name"
+                    {% endif %}
+                    name="field_name"
+                    class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
+                    {% if field.name %}
+                        value= {{ field.name }}
+                    {% else %}
+                        placeholder="Enter a field name"
+                    {% endif %}  
+                    required  
+                >
+            </div>
         </div>
-        <div class="flex-grow"> 
-            <input 
-                {% if field.id %} 
-                    id="field_{{field.id}}_name"
-                {% else %}
-                    id="new_field_name"
-                {% endif %}
-                name="field_name"
-                class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
-                {% if project.field.name %}
-                    value= {{ field.name }}
-                {% else %}
-                    placeholder="Enter a field name"
-                {% endif %}  
-                required  
-            >
+        <div class="flex flex-row items-center align-middle w-full gap-8">
+            <div class=" flex text-lg text-gray-600 font-medium w-1/4 min-w-fit items-baseline">
+                Selector path
+                <div 
+                    class="text-sm font-normal italic ml-3 cursor-pointer flex flex-col justify-end "
+                    onclick="document.getElementById('find_field_selector_form').classList.remove('hidden');"
+                > 
+                Help me to find a selector
+                </div>
+            </div>
+            <div class="flex-grow">
+                <textarea 
+                    {% if field.name %} 
+                        id="field_{{ field.name }}_selector"
+                    {% else %}
+                        id="new_field_selector"
+                    {% endif %}
+                    name="selector"
+                    class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 resize-none overflow-hidden" 
+                    rows="1"
+                    oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"
+                    {% if field.selector %}
+                        >{{ field.selector }}</textarea>
+                    {% else %}
+                        placeholder="Enter path to the field value you want to scrape from components."></textarea>
+                    {% endif %}
+            </div>
         </div>
-    </div>
-    <div class="flex flex-row items-center align-middle w-full gap-8">
-        <div class=" flex text-lg text-gray-600 font-medium w-1/4 min-w-fit items-baseline">
-            Selector path
-            <div 
-                class="text-sm font-normal italic ml-3 cursor-pointer flex flex-col justify-end "
-                onclick="document.getElementById('{% if field.id is not None %}find_field_{{field.id}}_selector{% else %}new_field_selector{% endif %}').classList.remove('hidden');"
-            > Help me to find a selector</div>
+        <div class="flex flex-row items-center align-middle w-full gap-8">
+            <div class=" flex text-lg text-gray-600 font-medium w-1/4 min-w-fit items-baseline">
+                Value Attribute
+            </div>
+            <div class="flex-grow">
+                <input 
+                    {% if field.name is not None %} 
+                        id="field_{{field.name}}_attribute"
+                    {% else %}
+                        id="new_field_attribute"
+                    {% endif %}
+                    name="attribute"
+                    class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
+                    {% if field.attribute %}
+                        value={{field.attribute}}
+                    {% else %}
+                        placeholder="Enter attribute of the field value you want to scrape from components."
+                    {% endif %}
+                    required     
+                >
+            </div>
         </div>
-        <div class="flex-grow">
-            <input 
-                {% if field.id %} 
-                    id="field_{{field.id}}_value_selector"
-                {% else %}
-                    id="new_field_value_selector"
-                {% endif %}
-                name="value_selector"
-                class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
-                {% if field.value_selector %}
-                    value={{ field.value_selector }}
-                {% else %}
-                    placeholder="Enter path to the field value you want to scrape from components."
-                {% endif %}  
-                required  
-            >
-        </div>
-    </div>
-    <div class="flex flex-row items-center align-middle w-full gap-8">
-        <div class=" flex text-lg text-gray-600 font-medium w-1/4 min-w-fit items-baseline">
-            Value Attribute
-        </div>
-        <div class="flex-grow">
-            <input 
-                {% if field.id is not None %} 
-                    id="field_{{field.id}}_value_attribute"
-                {% else %}
-                    id="new_field_value_attribute"
-                {% endif %}
-                name="value_attribute"
-                class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
-                {% if field.html_type_of_value %}
-                    value={{field.html_type_of_value}}
-                {% else %}
-                    placeholder="Enter attribute of the field value you want to scrape from components."
-                {% endif %}
-                required     
-            >
-        </div>
-    </div>
+    </form>
     <div class="flex flex-row w-full items-center align-middle justify-center gap-4">
         <button 
+            form="check_save_field_form"
             name="check_values" 
             value="check_values"
             type="submit" 
@@ -92,62 +95,29 @@
             Check Values
         </button>
         <button 
+            form="check_save_field_form"
             value="save_field"
             name="save_field" 
             value="submit"
-            class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium enabled:hover:border-gray-400 disabled:opacity-75"
+            class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium"
         >
             Save Field
         </button>
-    </div>
-</form>
-
-
-{% include 'webscraper/components/field_selector_form.html' %}
-<div id="{% if field.id is not None %}field_{{field.id}}_values{% else %}field_values_on_page{% endif %}" class="flex flex-column lg:flex-row">
-    {% if field.value.0 and field.selector %}
-        <div class=" flex flex-grow">
-            <div class="text-lg text-gray-600 font-medium min-w-fit align-middle">
-                Found value
-            </div>
-            <div class="flex-grow">
-                <div 
-                    {% comment %} id="field_{{field.id}}_value_result" {% endcomment %}
-                    class="w-full p-3 min-w-96" 
-                        {{field.value}}
+        {% if field.name %}
+            <form action="{% url 'delete_field' project.id field.name %}" method="POST">
+                {% csrf_token %}
+                <button 
+                    type="submit"
+                    class="px-3 py-3 min-w-32 items-center text-center text-red-700 border-2 border-red-700 bg-white hover:bg-red-700 hover:text-white rounded-md font-medium"
                 >
-            </div>
-        </div>
-        {% comment %} <div class=" flex flex-grow">
-            <div class="text-lg text-gray-600 font-medium min-w-fit align-middle">
-                Selector
-            </div>
-            <div class="flex-grow">
-                <div 
-                    id="field_{{field.id}}_value_result"
-                    class="w-full p-3 min-w-96 " 
-                        {{field.selector}}
-                >
-            </div>
-        </div> {% endcomment %}
-        {% comment %} <form id="{{field.id}}" method="POST" action="{% url 'add-field' project.id field.id %}" class="flex flex-row items-center align-middle w-full my-8 gap-8"> 
-            <input id="field_{{field.id}}_name" hidden value= {{ project.field.name }}>
-            <input id="field_{{field.id}}_selector" hidden value= {{ project.field.selector }}> 
-            <button type="submit" class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium">
-                Save field
-            </button>
-        </form> {% endcomment %}
-    {% endif %}
-
-</div> 
-{% if field_parsing_error %}
-    <div id="field_parsing_error_message" class="font-bold z-0 overflow-auto p-3 text-red-500">
-        {{ error_response }}
+                    Delete Field
+                </button>
+            </form>
+        {% endif %}
     </div>
-{% endif %}
+</div>
 
-{% comment %} <form id="{{field.id}}" method="GET" action="{% url 'remove-field' project.id field.id %}" class="flex flex-row items-center align-middle w-full my-8 gap-8">   
-    <button type="submit" class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium">
-        Remove field
-    </button>
-</form> {% endcomment %}
+
+
+
+

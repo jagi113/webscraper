@@ -1,27 +1,5 @@
-{% comment %} <turbo-stream target="field_{{field.id}}_values" action="update">
+<turbo-stream target="field_values_on_page" action="replace">
     <template>
-        {% include 'webscraper/components/field_response.html' with project=project field=field field_parsing_error=field_parsing_error %}
-    </template>
-</turbo-stream>
-
-<turbo-stream target="html_type_of_value_input" action="replace">
-    <template>
-        <input 
-            id="html_type_of_value_input"
-            name="html_type_of_value"
-            class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
-            {% if field.html_type_of_value %}
-                value= {{ field.html_type_of_value }}
-            {% else %}
-                placeholder="Enter desired value found in the FIRST component (Optional)"
-            {% endif %}    
-        >
-    </template>
-</turbo-stream> {% endcomment %}
-
-<turbo-stream target="{% if field.id is not None %}field_{{field.id}}_values{% else %}field_values_on_page{% endif %}" action="update">
-    <template>
-
         {% include 'webscraper/components/field_response.html' with project=project field=field field_parsing_error=field_parsing_error %}
     </template>
 </turbo-stream>

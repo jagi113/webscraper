@@ -111,13 +111,14 @@ class FindComponent(View):
             component_response = parser.parse(html_content=page_content, **kwargs)
         except Exception as e:
             error_response = f"While parsing html content for components following error occured: \n{e}"
-
+        print(project.fields["fields"])
         return render(
             request,
             "webscraper/partial/_component_response.html",
             {
                 "project": project,
                 "component_response": component_response,
+                "fields": project.fields["fields"],
                 "error_response": error_response,
             },
         )
@@ -125,19 +126,12 @@ class FindComponent(View):
 
 class FindFieldValueSelector(View):
     @turbo_stream_response
-    def post(self, request, project_id, field_id=None):
+    def post(self, request, project_id, field_name=None):
         project = get_object_or_404(Project, id=project_id)
         field_expected_value = request.POST.get("field_expected_value")
-        html_type_of_value = request.POST.get("html_type_of_value")
+        attribute = request.POST.get("attribute")
         error_response = None
         error_response, page_content = get_page_content(project)
-
-        if error_response is not None:
-            return render(
-                request,
-                "webscraper/partial/_field_error_response.html",
-                {"project": project, "error_response": error_response},
-            )
 
         parser = PageParser()
 
@@ -152,19 +146,25 @@ class FindFieldValueSelector(View):
             error_response = f"While parsing html content for components following error occured: \n{e}"
 
         for component in component_response:
-            selector, value_html_type = parser.generate_selector(
+            selector, attribute = parser.generate_selector(
                 component,
                 project.selector_type,
                 field_expected_value,
-                html_type_of_value,
+                attribute,
             )
             if selector:
                 break
 
         if not selector:
             error_response = f"Value {field_expected_value} was not found in the components. Try again!"
-        print(f"Selector found: {selector}")
-        print(value_html_type)
+
+        if error_response is not None:
+            return render(
+                request,
+                "webscraper/partial/_field_error_response.html",
+                {"project": project, "error_response": error_response},
+            )
+
         return render(
             request,
             "webscraper/partial/_find_selector_response.html",
@@ -172,73 +172,92 @@ class FindFieldValueSelector(View):
                 "project": project,
                 "field": (
                     {
-                        "id": field_id if field_id else None,
-                        "value_selector": selector if not error_response else None,
-                        "html_type_of_value": (
-                            value_html_type if not error_response else None
-                        ),
+                        "name": field_name if field_name else None,
+                        "selector": selector if not error_response else None,
+                        "attribute": (attribute if not error_response else None),
                     }
                 ),
-                "field_parsing_error": error_response,
             },
         )
 
 
 class FieldForm(View):
     @turbo_stream_response
-    def post(self, request, project_id, field_id=None):
+    def get(self, request, project_id, field_name=None):
+        project = get_object_or_404(Project, id=project_id)
+        field = None
+        if field_name and field_name in project.fields["fields"]:
+            field = project.fields["fields"][field_name]
+            field["name"] = field_name
+        return render(
+            request,
+            "webscraper/partial/_field_form.html",
+            {
+                "project": project,
+                "field": field,
+            },
+        )
+
+    @turbo_stream_response
+    def post(self, request, project_id, field_name=None):
         project = get_object_or_404(Project, id=project_id)
         field_name = request.POST.get("field_name")
-        selector = request.POST.get("value_selector")
-        value_html_type = request.POST.get("value_attribute")
-        print(f"Selector is: {selector}")
-        print(f"Value html type is: {value_html_type}")
+        selector = request.POST.get("selector")
+        attribute = request.POST.get("attribute")
+
+        error_response = None
+        error_response, page_content = get_page_content(project)
+
+        if error_response is not None:
+            return render(
+                request,
+                "webscraper/partial/_field_error_response.html",
+                {"project": project, "error_response": error_response},
+            )
+
+        parser = PageParser()
+
+        if selector:
+            component_kwargs = (
+                {"css_selector": project.component_path}
+                if project.selector_type == "CSS"
+                else {"xpath_selector": project.component_path}
+            )
+            selector_kwargs = (
+                {"css_selector": selector}
+                if project.selector_type == "CSS"
+                else {"xpath_selector": selector}
+            )
+            try:
+                values = []
+                for component in parser.parse(
+                    html_content=page_content, **component_kwargs
+                ):
+                    component_values = parser.get_values(
+                        html_content=component,
+                        attribute=attribute,
+                        **selector_kwargs,
+                    )
+                    values.append(component_values)
+
+                if all(not sublist for sublist in values):
+                    raise Exception(
+                        "No values were found. Check the Selector again! It might be too specific."
+                    )
+            except Exception as e:
+                error_response = f"While parsing html content for field {field_name} following error occured: \n{e}"
+        else:
+            error_response = f"Selector Path for scraping value is required"
+
+        if error_response is not None:
+            return render(
+                request,
+                "webscraper/partial/_field_error_response.html",
+                {"project": project, "error_response": error_response},
+            )
+
+        # for presenting found values
         if "check_values" in request.POST:
-            print("Checking values")
-            error_response = None
-            error_response, page_content = get_page_content(project)
-
-            if error_response is not None:
-                return render(
-                    request,
-                    "webscraper/partial/_field_error_response.html",
-                    {"project": project, "error_response": error_response},
-                )
-
-            parser = PageParser()
-
-            if selector:
-                component_kwargs = (
-                    {"css_selector": project.component_path}
-                    if project.selector_type == "CSS"
-                    else {"xpath_selector": project.component_path}
-                )
-                selector_kwargs = (
-                    {"css_selector": selector}
-                    if project.selector_type == "CSS"
-                    else {"xpath_selector": selector}
-                )
-                try:
-                    values = []
-                    for component in parser.parse(
-                        html_content=page_content, **component_kwargs
-                    ):
-                        component_values = parser.get_values(
-                            html_content=component,
-                            value_attribute=value_html_type,
-                            **selector_kwargs,
-                        )
-                        values.append(component_values)
-
-                    if all(not sublist for sublist in values):
-                        raise Exception(
-                            "No values were found. Try to make Selector more general."
-                        )
-                except Exception as e:
-                    error_response = f"While parsing html content for field {field_name} following error occured: \n{e}"
-            else:
-                error_response = f"Selector Path for scraping value is required"
-
             return render(
                 request,
                 "webscraper/partial/_field_response.html",
@@ -246,26 +265,37 @@ class FieldForm(View):
                     "project": project,
                     "field": (
                         {
-                            "id": field_id if field_id else None,
                             "name": field_name,
                             "values": values,
                             "selector": selector,
-                            "html_type_of_value": value_html_type,
+                            "attribute": attribute,
                         }
-                        if not error_response
-                        else None
                     ),
-                    "field_parsing_error": error_response,
                 },
             )
 
-        print("saving field")
-
+        # for saving / updating field
+        project.add_field(field_name, selector, attribute)
         return render(
             request,
-            "webscraper/partial/_field_response.html",
+            "webscraper/partial/_fields_updated.html",
             {
                 "project": project,
-                "field_parsing_error": "Saving field",
+                "fields": project.fields["fields"],
+            },
+        )
+
+
+class DeleteField(View):
+    @turbo_stream_response
+    def post(self, request, project_id, field_name):
+        project = get_object_or_404(Project, id=project_id)
+        project.remove_field(field_name)
+        return render(
+            request,
+            "webscraper/partial/_fields_updated.html",
+            {
+                "project": project,
+                "fields": project.fields["fields"],
             },
         )

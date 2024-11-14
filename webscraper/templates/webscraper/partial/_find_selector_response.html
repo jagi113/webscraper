@@ -1,51 +1,46 @@
-{% if not field_parsing_error %}
-    <turbo-stream target="{% if field.id is not None %}find_field_{{field.id}}_selector{% else %}new_field_selector{% endif %}" action="replace">
-        <template>
-            {% include 'webscraper/components/field_selector_form.html' with project=project field=field %}
-        </template>
-    </turbo-stream>
+<turbo-stream target="{% if field.name %}field_{{field.name}}_selector{% else %}new_field_selector{% endif %}" action="replace">
+    <template>
+        <textarea 
+            {% if field.name %} 
+                id="field_{{ field.name }}_selector"
+            {% else %}
+                id="new_field_selector"
+            {% endif %}
+            name="selector"
+            class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 resize-none overflow-hidden" 
+            rows="1"
+            oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"
+        >{{ field.selector }}</textarea>
+    </template>
+</turbo-stream>
 
-    <turbo-stream target="{% if field.id is not None %}field_{{field.id}}_value_selector{% else %}new_field_value_selector{% endif %}" action="replace">
-        <template>
-            <input 
-                {% if field.id is not None %} 
-                    id="field_{{field.id}}_value_selector"
-                {% else %}
-                    id="new_field_value_selector"
-                {% endif %}
-                name="value_selector"
-                class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
-                value="{{ field.value_selector }}"   
-            >
-        </template>
-    </turbo-stream>
+<turbo-stream target="find_field_selector_form" action="replace">
+    <template>
+        {% include 'webscraper/components/field_selector_form.html' with project=project field=field %}
+    </template>
+</turbo-stream>
 
-    <turbo-stream target="{% if field.id is not None %}field_{{field.id}}_value_attribute{% else %}new_field_value_attribute{% endif %}" action="replace">
-        <template>
-            <input 
-                {% if field.id is not None %} 
-                    id="field_{{field.id}}_value_attribute"
-                {% else %}
-                    id="new_field_value_attribute"
-                {% endif %}
-                name="value_attribute"
-                class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
-                value="{{field.html_type_of_value}}"   
-            >
-        </template>
-    </turbo-stream>
+<turbo-stream target="{% if field.name %}field_{{field.name}}_attribute{% else %}new_field_attribute{% endif %}" action="replace">
+    <template>
+        <input 
+            {% if field.name %} 
+                id="field_{{field.name}}_attribute"
+            {% else %}
+                id="new_field_attribute"
+            {% endif %}
+            name="attribute"
+            class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
+            value="{{field.attribute}}"   
+        >
+    </template>
+</turbo-stream>
 
-    <turbo-stream target="{% if field.id is not None %}field_{{field.id}}_values{% else %}field_values_on_page{% endif %}" action="update">
-        <template>
-        </template>
-    </turbo-stream>
+<turbo-stream target="field_values_on_page" action="update">
+    <template>
+    </template>
+</turbo-stream>
 
-{% else %}
-
-    <turbo-stream target="field_parsing_error_message" action="update">
-        <template>
-            {{ field_parsing_error }}
-        </template>
-    </turbo-stream>
-
-{% endif %}
+<turbo-stream target="field_parsing_error_message" action="update">
+    <template>
+    </template>
+</turbo-stream>
