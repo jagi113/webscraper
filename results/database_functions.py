@@ -15,7 +15,7 @@ def prepare_table(table_name, cols):
     # Validate the table name
     table_name = validate_identifier(f"project_{table_name}")
     # Validate and prepare column names
-    cols_names = [validate_identifier(col["id"]) for col in cols]
+    cols_names = [validate_identifier(col) for col in cols]
 
     with connection.cursor() as cursor:
         # Check if the table exists
