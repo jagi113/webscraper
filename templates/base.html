@@ -12,9 +12,9 @@
     <script async defer src="{% static 'js/stimulus/bundle.js' %}"></script>
 
 </head>
-<body>
+<body class="bg-zinc-800">
     {% include 'components/menu.html' %}
-    <div class="mx-auto w-[1200px] min-h-screen relative" data-controller="scroll-top" data-action="scroll@window->scroll-top#handleScroll">
+    <div class="mx-auto w-[1200px] min-h-screen relativ" data-controller="scroll-top" data-action="scroll@window->scroll-top#handleScroll">
         {% include 'common/scroll_to_top_button.html' %}
 
         {% block content %}

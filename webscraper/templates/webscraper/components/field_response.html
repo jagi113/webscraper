@@ -1,14 +1,14 @@
 <div id="field_values_on_page" class="flex flex-row align-text-top w-full gap-8 my-8">
     {% if field.values %}
-            <div class="text-lg text-gray-600 font-medium w-1/4 min-w-fit">
+            <div class="text-lg text-amber-300 font-medium w-1/4 min-w-fit">
                 Found results on the page
             </div>
-            <div class="flex flex-col flex-grow divide-y-2 divide-gray-500 ">
+            <div class="flex flex-col flex-grow divide-y-2 divide-amber-200 ">
                 {% for component_values in field.values %}
                 <div>
-                    <div class="w-full text-wrap text-base"> Component {{ forloop.counter }}:</div>
+                    <div class="w-full text-wrap text-base text-amber-200"> Component {{ forloop.counter }}:</div>
                     {% for value in component_values %}
-                        <div class="w-full text-wrap text-base text-gray-600 italic">{{value}}</div>
+                        <div class="w-full text-wrap text-base text-amber-300 italic">{{value}}</div>
                     {% endfor %}
                 </div>
                 {% endfor %}

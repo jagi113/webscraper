@@ -4,7 +4,7 @@
 
 >
     <div class="w-full flex flex-row gap-8">
-        <div class="flex text-lg text-gray-600 font-medium w-1/8 min-w-fit">
+        <div class="flex text-lg text-amber-300 font-medium w-1/8 min-w-fit">
             Fields:   
         </div>
         <div class="flex flex-wrap justify-start gap-4">
@@ -12,13 +12,13 @@
                 {% for _, field in fields.items %}
                     <a 
                         href="{% url 'field_form' project.id field.id %}"
-                        class="min-w-fit px-3 py-1 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium"
+                        class="min-w-fit px-3 py-1 items-center text-center text-amber-300 border-2 border-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium"
                         >
                         {{ field.name }}
                     </a>
                 {% endfor %}
             {% else %}
-                <div class="flex font-medium text-lg text-gray-600">
+                <div class="flex font-medium text-lg text-amber-300">
                     No saved fields
                 </div>
             {% endif %}
@@ -27,7 +27,7 @@
     <div class="flex justify-center">
         <a 
             href="{% url 'field_form' project.id %}"
-            class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium"
+            class="px-3 py-3 min-w-32 items-center text-center text-amber-300 border-2 border-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium"
         >
             Add New Field
         </a>

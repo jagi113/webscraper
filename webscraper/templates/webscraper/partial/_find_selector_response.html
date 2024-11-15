@@ -7,7 +7,7 @@
                 id="new_field_selector"
             {% endif %}
             name="selector"
-            class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 resize-none overflow-hidden" 
+            class="w-full p-3 border-2 text-amber-300 bg-zinc-800 focus:border-amber-300 border-amber-200 rounded-md min-w-96 resize-none overflow-hidden" 
             rows="1"
             oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"
         >{{ field.selector }}</textarea>
@@ -29,7 +29,7 @@
                 id="new_field_attribute"
             {% endif %}
             name="attribute"
-            class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
+            class="w-full p-3 border-2 text-amber-300 bg-zinc-800 focus:border-amber-300 border-amber-200 rounded-md min-w-96 inline-block" 
             value="{{field.attribute}}"   
         >
     </template>

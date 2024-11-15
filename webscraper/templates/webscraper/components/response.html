@@ -15,14 +15,14 @@
 
 
 <form id="component_form" method="GET" action="{% url 'find_component' project.id %}" class="flex flex-row items-center align-middle w-full my-8 gap-8">
-    <div class="text-lg text-gray-600 font-medium min-w-fit align-middle"> <!-- Set flex-none to prevent resizing -->
+    <div class="text-lg text-amber-300 font-medium min-w-fit align-middle"> <!-- Set flex-none to prevent resizing -->
         Component ID path
     </div>
     <div class="flex-grow"> <!-- Set flex-grow to fill remaining space -->
         <input 
             id="component_path"
             name="component_path"
-            class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
+            class="w-full p-3 border-2 text-amber-300 bg-zinc-800 focus:border-amber-300 border-amber-200 rounded-md min-w-96 inline-block placeholder-zinc-400" 
             {% if project.component_path %}
                 value= {{ project.component_path }}
             {% else %}
@@ -31,7 +31,7 @@
         >
     </div>
     
-    <button type="submit" class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium">
+    <button type="submit" class="px-3 py-3 min-w-32 items-center text-center text-amber-300 border-2 border-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
         Find Components
     </button>
 </form>

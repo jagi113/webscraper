@@ -4,11 +4,11 @@
 
 {% block content %}
 
-<form id="project_form" method="POST" action="{% url 'projects:create-project' %}" class="flex flex-col gap-6">
+<form id="project_form" method="POST" action="{% url 'projects:create_project' %}" class="flex flex-col gap-6">
     {% csrf_token %}
     {% for field in form %}
         <div class="flex flex-row items-center align-middle w-full gap-8">
-            <div class="text-lg text-gray-600 font-medium min-w-32 w-fit align-middle">
+            <div class="text-lg text-amber-300 font-medium min-w-56 w-fit align-middle">
                 {{ field.label_tag }}
             </div>
             <div class="flex-grow">
@@ -17,7 +17,7 @@
         </div>
     {% endfor %}
 
-    <button type="submit" class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium">
+    <button type="submit" class="px-3 py-3 min-w-32 items-center text-center text-amber-300 border-2 border-amber-300 hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
         Create Project
     </button>
 </form>

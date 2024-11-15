@@ -12,7 +12,7 @@
     >
         {% csrf_token %}
         <div class="flex flex-row items-center align-middle w-full gap-8">
-            <div class="text-lg text-gray-600 font-medium w-1/4 min-w-fit align-middle ">
+            <div class="text-lg text-amber-300 font-medium w-1/4 min-w-fit align-middle ">
                 Field name
             </div>
             <div class="flex-grow"> 
@@ -23,7 +23,7 @@
                         id="new_field_name"
                     {% endif %}
                     name="field_name"
-                    class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
+                    class="w-full p-3 border-2 text-amber-300 bg-zinc-800 focus:border-amber-300 border-amber-200 rounded-md min-w-96 inline-block placeholder-zinc-400" 
                     {% if field.name %}
                         value= {{ field.name }}
                     {% else %}
@@ -34,7 +34,7 @@
             </div>
         </div>
         <div class="flex flex-row items-center align-middle w-full gap-8">
-            <div class=" flex text-lg text-gray-600 font-medium w-1/4 min-w-fit items-baseline">
+            <div class=" flex text-lg text-amber-300 font-medium w-1/4 min-w-fit items-baseline">
                 Selector path
                 <div 
                     class="text-sm font-normal italic ml-3 cursor-pointer flex flex-col justify-end "
@@ -51,7 +51,7 @@
                         id="new_field_selector"
                     {% endif %}
                     name="selector"
-                    class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 resize-none overflow-hidden" 
+                    class="w-full p-3 border-2 text-amber-300 bg-zinc-800 focus:border-amber-300 border-amber-200 rounded-md min-w-96 resize-none overflow-hidden placeholder-zinc-400" 
                     rows="1"
                     oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"
                     {% if field.selector %}
@@ -62,7 +62,7 @@
             </div>
         </div>
         <div class="flex flex-row items-center align-middle w-full gap-8">
-            <div class=" flex text-lg text-gray-600 font-medium w-1/4 min-w-fit items-baseline">
+            <div class=" flex text-lg text-amber-300 font-medium w-1/4 min-w-fit items-baseline">
                 Value Attribute
             </div>
             <div class="flex-grow">
@@ -73,7 +73,7 @@
                         id="new_field_attribute"
                     {% endif %}
                     name="attribute"
-                    class="w-full p-3 border-2 focus:border-gray-600 border-gray-500 rounded-md min-w-96 inline-block" 
+                    class="w-full p-3 border-2 text-amber-300 bg-zinc-800 focus:border-amber-300 border-amber-200 rounded-md min-w-96 inline-block placeholder-zinc-400" 
                     {% if field.attribute %}
                         value={{field.attribute}}
                     {% else %}
@@ -90,7 +90,7 @@
             name="check_values" 
             value="check_values"
             type="submit" 
-            class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium"
+            class="px-3 py-3 min-w-32 items-center text-center text-amber-300 border-2 border-amber-300 hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium"
             >
             Check Values
         </button>
@@ -99,7 +99,7 @@
             value="save_field"
             name="save_field" 
             value="submit"
-            class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium"
+            class="px-3 py-3 min-w-32 items-center text-center text-amber-300 border-2 border-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium"
         >
             Save Field
         </button>
@@ -108,7 +108,7 @@
                 {% csrf_token %}
                 <button 
                     type="submit"
-                    class="px-3 py-3 min-w-32 items-center text-center text-red-700 border-2 border-red-700 bg-white hover:bg-red-700 hover:text-white rounded-md font-medium"
+                    class="px-3 py-3 min-w-32 items-center text-center text-red-500 border-2 border-red-500  hover:bg-red-500 hover:text-zinc-800 rounded-md font-medium"
                 >
                     Delete Field
                 </button>

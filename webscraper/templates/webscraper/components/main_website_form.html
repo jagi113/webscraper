@@ -1,19 +1,19 @@
 <form id="main_website_form" method="GET" action="{% url 'scrape-main-page' project.id %}" class="flex flex-col">
     {% csrf_token %}
     <div class="flex flex-row items-center align-middle w-full gap-8">
-        <div class="text-lg text-gray-600 font-medium min-w-fit align-middle"> <!-- Set flex-none to prevent resizing -->
+        <div class="text-lg text-amber-300 font-medium min-w-fit align-middle">
             {{ main_website_form.fields.main_website.label }}
         </div>
-        <div class="flex-grow"> <!-- Set flex-grow to fill remaining space -->
+        <div class="flex-grow">
             {{ main_website_form.main_website }}
         </div>
         
-        <button type="submit" class="px-3 py-3 min-w-32 items-center text-center text-gray-600 border-2 border-gray-600 bg-white hover:bg-gray-600 hover:text-white rounded-md font-medium">
+        <button type="submit" class="px-3 py-3 min-w-32 items-center text-center text-amber-300 border-2 border-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
             Scrape
         </button>
     </div>
     {% if main_website_form.errors %}
-        <ul class="flex flex-col text-justify text-sm font-semibold text-red-700 italic gap-1 md:gap-2">
+        <ul class="flex flex-col text-justify text-sm font-semibold text-red-500 italic gap-1 md:gap-2">
             {% for field_errors in main_website_form.errors.values %}
                 {% for error in field_errors %}
                     <li>{{ error }}</li>

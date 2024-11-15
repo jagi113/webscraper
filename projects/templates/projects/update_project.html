@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<form id="project_form" method="POST" action="{% url 'projects:update_project' project.id %}" class="flex flex-col gap-6">
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="flex flex-row items-center align-middle w-full gap-8">
+            <div class="text-lg text-amber-300 font-medium min-w-56 w-fit align-middle">
+                {{ field.label_tag }}
+            </div>
+            <div class="flex-grow">
+                {{ field }}
+            </div>
+        </div>
+    {% endfor %}
+
+
+</form>
+<div class="flex gap-8 mt-10">
+    <button type="submit" form="project_form" class="py-3 w-full items-center text-center text-amber-300 border-2 border-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
+        Save Project Settings
+    </button>
+    <form action="{% url 'projects:delete_project' project.id %}" method="POST">
+        {% csrf_token %}
+        <button 
+            type="submit"
+            class="px-3 py-3 w-fit items-center text-center text-red-500 border-2 border-red-500 hover:bg-red-500 hover:text-zinc-800 rounded-md font-medium text-nowrap"
+        >
+            Delete Entire Project And Data
+        </button>
+    </form>
+</div>
+<div class="flex text-lg font-bold text-amber-300 w-full mt-16 mb-8">
+    Fields overview:   
+</div>
+<div class="w-full flex flex-col divide-y-2 divide-amber-200">
+    {% if fields.items %}
+        {% for field in fields.values %}
+            <div class="flex flex-row w-full shrink-0 py-2">
+                <div 
+                    class="min-w-32 items-center text-left text-amber-300 font-medium"
+                >
+                    {{ field.name }}
+                </div>
+                <div class="flex gap-4 text-amber-300 font-normal items-center text-wrap">
+                    {{field.selector}}
+                    {{field.attribute}}
+                </div>
+            </div>  
+        {% endfor %}
+    {% else %}
+            <div class="flex font-medium text-lg text-amber-300">
+                No saved fields
+            </div>
+    {% endif %}
+    </div>
+</div>
+{% endblock %}
