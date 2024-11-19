@@ -9,7 +9,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from scrapy_scraper.spiders.main_page_spider import MainSpider
-from results.database_functions import prepare_table
+from results.database_functions import prepare_table, save_data_to_db
 from scrapers.helper_functions import separate_url_and_page_num
 
 logger = logging.getLogger(__name__)
@@ -67,6 +67,7 @@ def scrape_and_save_to_database(
     for item in scraped_results:
         batch_data = item.get("batch_data", [])
         progress = item.get("progress", 0)
+        save_data_to_db(project_name, batch_data)
         print(f"Scraping progress: {progress:.2f}%")
         print(f"Scraped batch: {batch_data}")
 
