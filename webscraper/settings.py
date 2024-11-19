@@ -85,7 +85,11 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
-    }
+    },
+    "scraped_data": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "scraped_data.sqlite3",
+    },
 }
 
 CACHES = {  # Temporary cache option for small traffic. In case of high traffic, it is necessary to use redis.
