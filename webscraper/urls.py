@@ -23,6 +23,7 @@ from . import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("projects.urls")),
+    path("<int:project_id>/scraped-data/", include("results.urls")),
     path("<int:project_id>/", views.ScrapingProject.as_view(), name="project"),
     path(
         "<int:project_id>/scrape-main-page/",
@@ -58,5 +59,10 @@ urlpatterns = [
         "<int:project_id>/delete-field/<str:field_id>/",
         views.DeleteField.as_view(),
         name="delete_field",
+    ),
+    path(
+        "<int:project_id>/scrape-data/",
+        views.ScrapeProjectData.as_view(),
+        name="scrape_data",
     ),
 ]

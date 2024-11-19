@@ -1,9 +1,12 @@
 <nav 
     class="w-full py-7 mb-8 bg-prism-tomorrow-bg items-center align-middle"
 >
-    <div class="mx-auto max-w-[1200px] w-full">
+    <div class="flex mx-auto max-w-[1200px] w-full gap-x-12 items-baseline">
         <a href="{% url 'projects:projects' %}">
             <h1 class="font-extrabold text-3xl text-yellow-400 ">Webscraper</h1>
+        </a>
+        <a href="{% url 'projects:projects' %}" class="font-extrabold text-xl text-yellow-400 ">
+            Projects
         </a>
     </div>
 </nav>

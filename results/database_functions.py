@@ -140,6 +140,24 @@ def save_data_to_db(table_name, rows):
     print(f"Inserted {len(rows)} rows into {table_name} successfully.")
 
 
+def get_data(table_name, limit_rows=None):
+    table_name = validate_identifier(table_name)
+
+    sql = f'SELECT * FROM "project_{table_name}"'
+
+    if limit_rows is not None:
+        if not isinstance(limit_rows, int) or limit_rows <= 0:
+            raise ValueError("limit_rows must be a positive integer.")
+        sql += f" LIMIT {limit_rows}"
+    sql += ";"
+
+    with connections["scraped_data"].cursor() as cursor:
+        cursor.execute(sql)  # Execute the query
+        data = cursor.fetchall()  # Fetch all results
+
+    return data
+
+
 def remove_duplicates_based_on_cols(table_name, cols):
     table_name = validate_identifier(table_name)
     cols_names = [validate_identifier(col) for col in cols]

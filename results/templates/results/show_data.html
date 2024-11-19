@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="my-10 w-full">
+    
+    <h1 class="text-2xl text-amber-300 font-bold mb-8">{{ project.name }} - scraped data</h1>
+    <table class="text-amber-200">
+        <thead>
+            <tr>
+                {% for field in fields %}
+                    <th scope="col">{{field.name}}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+                <tr>
+                    {% for column in row %}
+                        {% if not forloop.counter0 == 0 %}  <!-- Skip the first column (assuming "id" is the first column) -->
+                            <td>{{ column }}</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

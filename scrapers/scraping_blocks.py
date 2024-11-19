@@ -2,13 +2,18 @@ import logging
 from scrapy.crawler import CrawlerProcess
 from scrapy.signalmanager import dispatcher
 from scrapy import signals
-import sys
-import os
+
+# import sys
+# import os
 
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from scrapy_scraper.spiders.main_page_spider import MainSpider
+# from scrapy_scraper.spiders.main_page_spider import MainSpider
+# from results.database_functions import prepare_table, save_data_to_db
+# from scrapers.helper_functions import separate_url_and_page_num
+
+from scrapers.scrapy_scraper.spiders.main_page_spider import MainSpider
 from results.database_functions import prepare_table, save_data_to_db
 from scrapers.helper_functions import separate_url_and_page_num
 
@@ -69,7 +74,6 @@ def scrape_and_save_to_database(
         progress = item.get("progress", 0)
         save_data_to_db(project_name, batch_data)
         print(f"Scraping progress: {progress:.2f}%")
-        print(f"Scraped batch: {batch_data}")
 
     print("Scraping completed!")
 
