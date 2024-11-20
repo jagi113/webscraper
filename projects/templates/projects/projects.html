@@ -22,6 +22,9 @@
                 <a href="{% url 'projects:update_project' project.id %}" class="px-3 min-w-32 items-center text-center text-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
                     Project settings
                 </a>
+                <a href="{% url 'projects:project_overview' project.id %}" class="px-3 min-w-32 items-center text-center text-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
+                    Project overview
+                </a>
                 <a href="{% url 'scraped_data:show_data' project.id %}" class="px-3 min-w-32 items-center text-center text-amber-300 hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
                     Scraped data
                 </a>

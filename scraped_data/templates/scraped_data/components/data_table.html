@@ -1,0 +1,28 @@
+<div id="data_table" class="relative">
+    <div class="overflow-x-auto">
+        <div class="relative max-h-[80vh] overflow-auto">
+            <table class="text-amber-200">
+                <thead class="sticky top-0 bg-zinc-800 z-10 shadow-amber-200 font-extrabold   shadow-[0_4px_0_0_rgba(255,191,0,1)]">
+                    <tr class="divide-x-[1px] divide-amber-200">
+                        <th scope="col" class="py-2 px-4 whitespace-nowrap">Number</th>
+                        {% for field in fields %}
+                            <th scope="col" class="py-2 px-4 whitespace-nowrap">{{ field.name }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody class="divide-y-[1px] font-light divide-amber-200">
+                    {% for row in data %}
+                        <tr class="divide-x-[1px] divide-amber-200">
+                            <td class="py-1 px-2 text-center whitespace-nowrap">{{ forloop.counter }}</td>
+                            {% for column in row %}
+                                {% if not forloop.counter0 == 0 %}
+                                    <td class="py-1 px-2 whitespace-nowrap">{{ column }}</td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

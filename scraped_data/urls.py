@@ -8,7 +8,12 @@ app_name = "scraped_data"
 urlpatterns = [
     path(
         "",
-        views.ShowData.as_view(),
+        views.ShowDataView.as_view(),
         name="show_data",
+    ),
+    path(
+        "remove_duplicates/",
+        views.RemoveDuplicatesView.as_view(),
+        name="remove_duplicates",
     ),
 ]

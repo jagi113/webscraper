@@ -316,4 +316,4 @@ class ScrapeProjectData(View):
             number_of_pages_to_scrape=project.number_of_pages_to_scrape,
             next_button=None,
         )
-        return redirect("scraped_data:show_data")
+        return redirect("scraped_data:show_data", project_id=project.pk)

@@ -65,3 +65,16 @@ class DeleteProjectView(View):
         project = get_object_or_404(Project, id=project_id)
         project.delete()
         return redirect("projects:projects")
+
+
+class ProjectOverviewView(View):
+    def get(self, request, project_id):
+        project = get_object_or_404(Project, id=project_id)
+        return render(
+            request,
+            "projects/project_overview.html",
+            {
+                "project": project,
+                "fields": project.fields["fields"],
+            },
+        )

@@ -168,7 +168,7 @@ def remove_duplicates_based_on_cols(table_name, cols):
         remove_duplicates_sql = f"""
         DELETE FROM "project_{table_name}" 
         WHERE id NOT IN (
-            SELECT MIN(id)
+            SELECT MAX(id)
             FROM "project_{table_name}"
             GROUP BY {", ".join(f'"{col}"' for col in cols_names)}
         );
@@ -178,7 +178,7 @@ def remove_duplicates_based_on_cols(table_name, cols):
         WITH CTE AS (
             SELECT 
                 id,
-                ROW_NUMBER() OVER (PARTITION BY {", ".join(f'"{col}"' for col in cols_names)} ORDER BY id) AS row_num
+                ROW_NUMBER() OVER (PARTITION BY {", ".join(f'"{col}"' for col in cols_names)} ORDER BY id DESC) AS row_num
             FROM "project_{table_name}"
         )
         DELETE FROM "project_{table_name}"

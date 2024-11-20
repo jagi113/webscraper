@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+<h1 class="text-2xl text-amber-300 font-bold mb-8">{{ project.name }} - project overview</h1>
+<div class="flex flex-col gap-6">
+    <div class="flex flex-row items-center align-middle w-full gap-8 text-lg text-amber-300 py-3 font-medium">
+        <div class="   min-w-56 w-fit align-middle">
+            Main page
+        </div>
+        <div class="w-full text-amber-300 ">
+            {{ project.main_page_url }}
+        </div>
+    </div>
+    <div class="flex flex-row items-center align-middle w-full gap-8 text-lg text-amber-300 font-medium">
+        <div class="   min-w-56 w-fit align-middle">
+            Selector type
+        </div>
+        <div class="w-full text-amber-300 ">
+            {{ project.selector_type }}
+        </div>
+    </div>
+    <div class="flex flex-row items-center align-middle w-full gap-8 text-lg text-amber-300 font-medium">
+        <div class="min-w-56 w-fit align-middle">
+            Number of pages to scrape
+        </div>
+        <div class="w-full text-amber-300 ">
+            {% if project.number_of_pages_to_scrape == 0 %}All pages{%else%}{{ project.number_of_pages_to_scrape }}{%endif%}
+        </div>
+    </div>
+    <div class="flex flex-row items-center align-middle w-full gap-8 text-lg text-amber-300 font-medium">
+        <div class="min-w-56 w-fit align-middle">
+            Next page to scrape
+        </div>
+        <div class="w-full text-amber-300 ">
+            {{ project.next_page_to_scrape }}
+        </div>
+    </div>
+</div>
+
+<div class="flex text-lg font-bold text-amber-300 w-full mt-10">
+    Fields overview:   
+</div>
+<div class="w-full flex flex-col divide-y-2 divide-amber-200">
+    {% if fields.items %}
+        {% for field in fields.values %}
+            <div class="flex flex-row w-full shrink-0 py-2">
+                <div 
+                    class="min-w-32 items-center text-left text-amber-300 font-medium"
+                >
+                    {{ field.name }}
+                </div>
+                <div class="flex gap-4 text-amber-300 font-normal items-center text-wrap">
+                    {{field.selector}}
+                    {{field.attribute}}
+                </div>
+            </div>  
+        {% endfor %}
+    {% else %}
+            <div class="flex font-medium text-lg text-amber-300">
+                No saved fields
+            </div>
+    {% endif %}
+</div>
+
+<form method="POST" action="{% url 'scrape_data' project.id %}" class="flex gap-8 mt-10">
+    {% csrf_token %}
+    <button type="submit" class="py-3 w-full items-center text-center text-amber-300 border-2 border-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
+        Scrape Project Data
+    </button>
+</form>
+{% endblock %}

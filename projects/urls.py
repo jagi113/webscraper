@@ -21,4 +21,9 @@ urlpatterns = [
         views.DeleteProjectView.as_view(),
         name="delete_project",
     ),
+    path(
+        "project-overview/<int:project_id>/",
+        views.ProjectOverviewView.as_view(),
+        name="project_overview",
+    ),
 ]
