@@ -10,11 +10,11 @@ from scrapy import signals
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # from scrapy_scraper.spiders.main_page_spider import MainSpider
-# from results.database_functions import prepare_table, save_data_to_db
+# from scraped_data.database_functions import prepare_table, save_data_to_db
 # from scrapers.helper_functions import separate_url_and_page_num
 
 from scrapers.scrapy_scraper.spiders.main_page_spider import MainSpider
-from results.database_functions import prepare_table, save_data_to_db
+from scraped_data.database_functions import prepare_table, save_data_to_db
 from scrapers.helper_functions import separate_url_and_page_num
 
 logger = logging.getLogger(__name__)
@@ -49,11 +49,11 @@ def scrape_and_save_to_database(
             "For project: {project_name} were not provided number of pages to scrape or next_button selector"
         )
 
-    scraped_results = []
+    scraped_data = []
     scraping_process = CrawlerProcess(MainSpider.custom_settings)
 
     def collect_item(item):
-        scraped_results.append(item)
+        scraped_data.append(item)
 
     dispatcher.connect(collect_item, signal=signals.item_scraped)
 
@@ -69,7 +69,7 @@ def scrape_and_save_to_database(
 
     scraping_process.start()
 
-    for item in scraped_results:
+    for item in scraped_data:
         batch_data = item.get("batch_data", [])
         progress = item.get("progress", 0)
         save_data_to_db(project_name, batch_data)

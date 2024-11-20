@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "webscraper.apps.WebscraperAppConfig",
     "scrapers.apps.ScrapersAppConfig",
-    "results.apps.ResultsConfig",
+    "scraped_data.apps.Scraped_dataConfig",
     "projects.apps.ProjectsAppConfig",
 ]
 

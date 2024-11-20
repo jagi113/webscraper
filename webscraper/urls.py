@@ -23,7 +23,7 @@ from . import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("projects.urls")),
-    path("<int:project_id>/scraped-data/", include("results.urls")),
+    path("<int:project_id>/scraped-data/", include("scraped_data.urls")),
     path("<int:project_id>/", views.ScrapingProject.as_view(), name="project"),
     path(
         "<int:project_id>/scrape-main-page/",

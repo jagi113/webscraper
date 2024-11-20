@@ -105,12 +105,12 @@ if __name__ == "__main__":
     urls = [f"https://grkatnr.sk/homilie/page/{num}/" for num in range(1, 11)]
 
     def main():
-        scraped_results = []
+        scraped_data = []
 
         scraping_process = CrawlerProcess(MainSpider.custom_settings)
 
         def collect_item(item):
-            scraped_results.append(item)
+            scraped_data.append(item)
 
         dispatcher.connect(collect_item, signal=signals.item_scraped)
 
@@ -133,7 +133,7 @@ if __name__ == "__main__":
 
         scraping_process.start()
 
-        for item in scraped_results:
+        for item in scraped_data:
             batch_data = item.get("batch_data", [])
             progress = item.get("progress", 0)
             print(f"Scraping progress: {progress:.2f}%")

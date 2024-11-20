@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="my-10 w-full">
+    
+    <h1 class="text-2xl text-amber-300 font-bold mb-8">{{ project.name }} - scraped data</h1>
+    <div class="relative">
+        <!-- Scroll Container -->
+        <div class="overflow-x-auto">
+            <div class="relative max-h-[80vh] overflow-auto">
+                <table class="text-amber-200 w-full">
+                    <thead class="sticky top-0 bg-zinc-800 z-10 shadow-amber-200 font-extrabold   shadow-[0_4px_0_0_rgba(255,191,0,1)]">
+                        <tr class="divide-x-[1px] divide-amber-200">
+                            {% for field in fields %}
+                                <th scope="col" class="py-2 px-4">{{ field.name }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y-[1px] font-light divide-amber-200">
+                        {% for row in data %}
+                            <tr class="divide-x-[1px] divide-amber-200">
+                                {% for column in row %}
+                                    {% if not forloop.counter0 == 0 %} <!-- Skip the first column (assuming "id" is the first column) -->
+                                        <td class="py-1 px-2">{{ column }}</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
