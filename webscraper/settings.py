@@ -11,8 +11,13 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-from os import getenv
+from os import getenv, getenv
 from dotenv import load_dotenv
+from .logging_config import LOGGING
+from celery_app.settings import *
+from redis_app.settings import *
+
+LOGGING = LOGGING
 
 load_dotenv()
 SECRET_KEY = getenv("SECRET_KEY")
@@ -27,7 +32,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "192.168.101.189"] + [
+    host.strip()
+    for host in getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
+    if host.strip()
+]
 
 
 # Application definition
@@ -39,6 +48,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "channels",
+    "websockets",
+    "redis",
+    "websockets_app",
+    "celery_app",
+    "redis_app",
     "webscraper.apps.WebscraperAppConfig",
     "scrapers.apps.ScrapersAppConfig",
     "scraped_data.apps.Scraped_dataConfig",
@@ -92,7 +107,7 @@ DATABASES = {
     },
 }
 
-CACHES = {  # Temporary cache option for small traffic. In case of high traffic, it is necessary to use redis.
+CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         "LOCATION": "unique-snowflake",
@@ -135,6 +150,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
@@ -148,3 +164,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # SECURE_SSL_REDIRECT = True
 # CSRF_COOKIE_SECURE = True
 # SESSION_COOKIE_SECURE = True
+
+
+# Channels configuration
+ASGI_APPLICATION = "webscraper.asgi.application"

@@ -1,5 +1,5 @@
 from django.core.cache import cache
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 from django.views import View
 
 from projects.models import Project
@@ -9,11 +9,11 @@ from scrapers.request_scraper.selectors import (
     is_valid_xpath_selector,
     is_valid_css_selector,
 )
-from scrapers.scraping_blocks import scrape_and_save_to_database
 
 from webscraper.decorators import turbo_stream_response
 from webscraper.forms import MainWebsiteForm
 from webscraper.helper_functions import get_page_content
+from celery_app.tasks import scrape_and_save_to_database_task
 
 # from scrapers.scrapy_scraper.spiders.page_scraper import PageScraper
 
@@ -302,9 +302,10 @@ class DeleteField(View):
 
 
 class ScrapeProjectData(View):
+    @turbo_stream_response
     def post(self, request, project_id):
         project = get_object_or_404(Project, id=project_id)
-        scrape_and_save_to_database(
+        scrape_and_save_to_database_task.delay(
             project_name=project.id,
             selector_type=project.selector_type,
             start_url=project.main_page_url,
@@ -316,4 +317,10 @@ class ScrapeProjectData(View):
             number_of_pages_to_scrape=project.number_of_pages_to_scrape,
             next_button=None,
         )
-        return redirect("scraped_data:show_data", project_id=project.pk)
+        return render(
+            request,
+            "webscraper/partial/_scraping_initialized.html",
+            {
+                "project": project,
+            },
+        )

@@ -64,10 +64,12 @@
     {% endif %}
 </div>
 
-<form method="POST" action="{% url 'scrape_data' project.id %}" class="flex gap-8 mt-10">
+<form method="POST" action="{% url 'scrape_data' project.id %}" class="flex gap-8 my-10">
     {% csrf_token %}
     <button type="submit" class="py-3 w-full items-center text-center text-amber-300 border-2 border-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
         Scrape Project Data
     </button>
 </form>
+
+{% include 'common/scraping_progress_bar.html' with project=project %}
 {% endblock %}

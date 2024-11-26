@@ -27,7 +27,17 @@ class RemoveDuplicatesView(View):
     def post(self, request, project_id):
         project = get_object_or_404(Project, id=project_id)
         selected_field_ids = request.POST.getlist("fields[]")
-        print(selected_field_ids)
+        if selected_field_ids == []:
+            return render(  # add failure toast message if no column is chosen
+                request,
+                "scraped_data/partial/_data_table.html",
+                {
+                    "project": project,
+                    "fields": project.fields["fields"].values(),
+                    "data": data,
+                },
+            )
+
         remove_duplicates_based_on_cols(project.id, selected_field_ids)
         data = get_data(project.id)
 

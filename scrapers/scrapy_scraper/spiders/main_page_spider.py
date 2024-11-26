@@ -8,8 +8,8 @@ logger = logging.getLogger(__name__)
 class MainSpider(scrapy.Spider):
     name = "main_spider"
     custom_settings = {
-        "CONCURRENT_REQUESTS": 5,
-        "DOWNLOAD_DELAY": 0.5,
+        "CONCURRENT_REQUESTS": 10,
+        "DOWNLOAD_DELAY": 5,
         "LOG_LEVEL": "INFO",
         "USER_AGENT": "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)",
     }

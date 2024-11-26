@@ -1,5 +1,8 @@
 import re
 from django.db import connections
+import logging
+
+logger = logging.getLogger("database")
 
 
 def validate_identifier(identifier):
@@ -26,9 +29,8 @@ def get_db_engine():
 
 
 def prepare_table(table_name, cols):
-    # Validate the table name
     table_name = f"project_{validate_identifier(table_name)}"
-    print(table_name)
+    logger.debug(f"Preparing table: {table_name}")
     # Validate and prepare column names
     cols_names = [validate_identifier(col) for col in cols]
 
@@ -42,7 +44,6 @@ def prepare_table(table_name, cols):
                 f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}';",
             )
             table_exists = cursor.fetchone()
-            print(table_exists)
         elif db_engine == "postgresql":
             cursor.execute(
                 "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = %s);",
@@ -52,6 +53,7 @@ def prepare_table(table_name, cols):
 
         if not table_exists:
             # Table does not exist, create it
+            logger.debug(f"Creating table: {table_name}")
             cursor.execute(
                 f"""
                 CREATE TABLE "{table_name}" (
@@ -76,6 +78,7 @@ def prepare_table(table_name, cols):
         # Add new columns only if they do not already exist
         for col in cols_names:
             if col not in existing_columns:
+                logger.debug(f"Adding col '{col}' to the table {table_name}")
                 cursor.execute(
                     f'ALTER TABLE "{table_name}" ADD COLUMN "{col}" TEXT DEFAULT NULL;'
                 )
@@ -85,6 +88,9 @@ def prepare_table(table_name, cols):
             col for col in existing_columns if col not in cols_names and col != "id"
         ]
         if columns_to_drop:
+            logger.debug(
+                f"Dropping '{', '.join(columns_to_drop)}' from the table {table_name}"
+            )
             new_table_name = f"{table_name}_new"
 
             columns_to_keep = [
@@ -112,14 +118,13 @@ def save_data_to_db(table_name, rows):
 
     # Ensure rows is not empty
     if not rows:
+        logger.error("No rows provided for insertion.")
         raise ValueError("No rows provided for insertion.")
 
     # Get column names from the first row (assumes all rows have the same structure)
     columns = rows[0].keys()
-    print(columns)
     # Validate column names
     columns = [validate_identifier(col) for col in columns]
-    print(columns)
 
     # Prepare placeholders and values
     placeholders = ", ".join(
@@ -132,12 +137,9 @@ def save_data_to_db(table_name, rows):
 
     # Construct the SQL query
     sql = f'INSERT INTO "project_{table_name}" ({column_names}) VALUES ({placeholders})'
-    print(sql)
 
     with connections["scraped_data"].cursor() as cursor:
         cursor.executemany(sql, values)
-
-    print(f"Inserted {len(rows)} rows into {table_name} successfully.")
 
 
 def get_data(table_name, limit_rows=None):
@@ -150,6 +152,7 @@ def get_data(table_name, limit_rows=None):
             raise ValueError("limit_rows must be a positive integer.")
         sql += f" LIMIT {limit_rows}"
     sql += ";"
+    logger.debug(f"Getting data: {sql}")
 
     with connections["scraped_data"].cursor() as cursor:
         cursor.execute(sql)  # Execute the query
@@ -188,4 +191,5 @@ def remove_duplicates_based_on_cols(table_name, cols):
         """
 
     with connections["scraped_data"].cursor() as cursor:
+        logger.debug(f"Removing duplicates: \n{remove_duplicates_sql}")
         cursor.execute(remove_duplicates_sql)

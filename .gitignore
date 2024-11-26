@@ -2,3 +2,6 @@
 .git
 venv
 node_modules
+logs
+db.sqlite3
+scraped_data.sqlite3

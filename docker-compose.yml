@@ -1,5 +1,48 @@
-version: '3'
+version: '3.8'
 services:
+  webscraper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/usr/src/webscraper
+      - ./logs:/usr/src/webscraper/logs
+    ports:
+      - "8002:8002"
+    restart: always
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DJANGO_ALLOWED_HOSTS=192.168.101.189, localhost, 192.168.101.195
+    networks:
+    - webscraper_network
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./static:/usr/src/app/static:ro
+    depends_on:
+      - webscraper
+    networks:
+      - webscraper_network
+
+  redis:
+    image: redis:6
+    ports:
+      - "6380:6379"
+    restart: always    
+
+  celery:
+    build:
+      context: .
+      dockerfile: ./celery_app/Dockerfile
+    command: celery -A webscraper worker --loglevel=info
+    depends_on:
+      - redis
+
   tailwind:
     tty: true
     restart: always
@@ -9,7 +52,9 @@ services:
     volumes:
       - ./static/:/static
       - ./:/webscraper
-    
+    networks:
+    - webscraper_network
+
   stimulus:
     restart: always
     build:
@@ -18,3 +63,9 @@ services:
     volumes:
       - ./stimulus/controllers:/controllers
       - ./static/js/stimulus:/static/js/stimulus
+    networks:
+    - webscraper_network
+
+networks:
+  webscraper_network:
+    driver: bridge

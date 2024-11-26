@@ -1,23 +1,23 @@
+# import for websocket
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
 import logging
 from scrapy.crawler import CrawlerProcess
 from scrapy.signalmanager import dispatcher
 from scrapy import signals
 
+# For direct function testing uncomment
 # import sys
 # import os
-
-
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 # from scrapy_scraper.spiders.main_page_spider import MainSpider
-# from scraped_data.database_functions import prepare_table, save_data_to_db
-# from scrapers.helper_functions import separate_url_and_page_num
 
 from scrapers.scrapy_scraper.spiders.main_page_spider import MainSpider
 from scraped_data.database_functions import prepare_table, save_data_to_db
 from scrapers.helper_functions import separate_url_and_page_num
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("celery")
 
 
 def scrape_and_save_to_database(
@@ -30,6 +30,7 @@ def scrape_and_save_to_database(
     number_of_pages_to_scrape=None,
     next_button=None,
 ):
+    logger.info(f"Starting scraping data for project {project_name}")
     prepare_table(project_name, [field["id"] for field in fields])
 
     if not number_of_pages_to_scrape and next_button:
@@ -64,18 +65,28 @@ def scrape_and_save_to_database(
         start_urls=urls,
         component_path=component_path,
         fields=fields,
-        batch_size=30,
+        batch_size=50,
     )
 
     scraping_process.start()
+
+    channel_layer = get_channel_layer()
+    group_name = f"scraping_progress_{project_name}"
 
     for item in scraped_data:
         batch_data = item.get("batch_data", [])
         progress = item.get("progress", 0)
         save_data_to_db(project_name, batch_data)
-        print(f"Scraping progress: {progress:.2f}%")
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                "type": "progress_update",
+                "message": {"progress": progress},
+            },
+        )
+        logger.info(f"Project: {project_name} - scraping progress: {progress:.2f}%")
 
-    print("Scraping completed!")
+    logger.info(f"Project: {project_name} - scraping completed!")
 
 
 if __name__ == "__main__":

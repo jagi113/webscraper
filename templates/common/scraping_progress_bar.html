@@ -1,0 +1,45 @@
+<div 
+    id="progress-bar-{{project.id}}" 
+    class="relative w-full h-4 mb-4 rounded-full bg-gray-700 overflow-hidden" 
+    data-controller="progress-bar" 
+    data-progress-bar-project-id-value="{{ project.id }}"
+>
+    <div 
+        class="absolute h-4 bg-amber-300 text-xs font-medium text-center p-0.5 leading-none rounded-full transition-all ease-linear" 
+        style="width: 0%" 
+        data-progress-bar-target="line"
+    >
+        <span 
+            class="relative flex text-amber-300 min-w-fit whitespace-nowrap ml-3" 
+            data-progress-bar-target="text"
+        >
+            0 %
+        </span>
+    </div>
+</div>
+
+
+{% comment %} <script>
+    const progressSocket = new WebSocket(
+        "ws://" + window.location.host + "/ws/scraping-progress/" + {{ project.id }} + "/"
+    );
+    
+    progressSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        const progressBar = document.getElementById(`progress-bar-{{project.id}}`);
+        const progressLine = progressBar.querySelector("div");
+        const progressText = progressBar.querySelector("span");
+    
+        progressLine.style.width = data.progress + "%";
+        progressText.textContent = data.progress + "%";
+    
+        if (data.progress > 10) {
+            progressText.classList.remove("text-amber-300", "relative", "ml-3");
+            progressText.classList.add("text-zinc-700", "place-self-center");
+        } else {
+            progressText.classList.add("text-amber-300", "relative", "ml-3");
+            progressText.classList.remove("text-zinc-700", "place-self-center");
+        }
+    };
+    
+</script> {% endcomment %}
