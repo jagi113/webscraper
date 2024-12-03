@@ -38,6 +38,12 @@ ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "192.168.101.189"] + [
     if host.strip()
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
+    if origin.strip()
+]
+
 
 # Application definition
 

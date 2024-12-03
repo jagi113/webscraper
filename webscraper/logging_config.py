@@ -33,7 +33,7 @@ LOGGING = {
         "redis_file": {
             "level": "DEBUG",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOGGING_DIR, "redis_logs.log"),
+            "filename": os.path.join(LOGGING_DIR, "django_redis_logs.log"),
             "maxBytes": 2 * 1024 * 1024,  # 2MB
             "backupCount": 5,  # Keep 5 backup copies
             "formatter": "simpleFormatter",

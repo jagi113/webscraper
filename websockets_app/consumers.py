@@ -15,19 +15,24 @@ class ScrapingProgressConsumer(AsyncWebsocketConsumer):
         logger.debug(f"Attempting to connect WebSocket for project {self.project_id}")
 
         # Join the group
+        if not self.channel_layer:
+            logger.error("Channel layer is not configured properly.")
+            await self.close()
+            return
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        logger.debug("Added to group successfully.")
+        logger.debug("About to accept connection...")
         await self.accept()
-
+        logger.debug("Connection accepted.")
         logger.debug(f"WebSocket connected to project {self.project_id}")
 
     async def disconnect(self, close_code):
         logger.debug(f"WebSocket disconnected from project {self.project_id}")
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
-    async def receive(self, text_data):
-        logger.debug(f"Received data: {text_data}")
-        data = json.loads(text_data)
-        progress = data.get("progress")
+    async def progress_update(self, event):
+        logger.debug(f"Received: {event}")
+        progress = event.get("progress", 0)
 
         logger.debug(f"Progress: {progress}")
 

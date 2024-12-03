@@ -81,7 +81,7 @@ def scrape_and_save_to_database(
             group_name,
             {
                 "type": "progress_update",
-                "message": {"progress": progress},
+                "progress": progress,
             },
         )
         logger.info(f"Project: {project_name} - scraping progress: {progress:.2f}%")

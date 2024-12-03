@@ -13,6 +13,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - DJANGO_ALLOWED_HOSTS=192.168.101.189, localhost, 192.168.101.195
+      - DJANGO_CSRF_TRUSTED_ORIGINS=http://192.168.101.189:8003
     networks:
     - webscraper_network
 
@@ -26,22 +27,33 @@ services:
       - ./static:/usr/src/app/static:ro
     depends_on:
       - webscraper
+    restart: always
     networks:
       - webscraper_network
 
   redis:
     image: redis:6
     ports:
-      - "6380:6379"
+      - "6380:6380"
     restart: always    
+    networks:
+      - webscraper_network
+    volumes:
+      - ./redis_app/redis.conf:/usr/local/etc/redis/redis.conf 
+      - ./logs/redis_logs.log:/var/log/redis/redis.log
+    command: redis-server /usr/local/etc/redis/redis.conf
+
 
   celery:
     build:
       context: .
       dockerfile: ./celery_app/Dockerfile
     command: celery -A webscraper worker --loglevel=info
+    restart: always
     depends_on:
       - redis
+    networks:
+      - webscraper_network
 
   tailwind:
     tty: true

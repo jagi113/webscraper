@@ -28,6 +28,7 @@ class RemoveDuplicatesView(View):
         project = get_object_or_404(Project, id=project_id)
         selected_field_ids = request.POST.getlist("fields[]")
         if selected_field_ids == []:
+            data = get_data(project.id)
             return render(  # add failure toast message if no column is chosen
                 request,
                 "scraped_data/partial/_data_table.html",
