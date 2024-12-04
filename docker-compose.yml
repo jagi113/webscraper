@@ -6,7 +6,6 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./:/usr/src/webscraper
-      - ./logs:/usr/src/webscraper/logs
     ports:
       - "8002:8002"
     restart: always
@@ -55,9 +54,11 @@ services:
     networks:
       - webscraper_network
     volumes:
-      - ./logs:/app/logs
-      - ./scrapers:/app/scrapers
-      - ./celery_app:/app/celery_app
+      # - ./logs:/app/logs
+      # - ./scrapers:/app/scrapers
+      # - ./celery_app:/app/celery_app
+      # - .scraped_data.sqlite3:/app/scraped_data.sqlite3
+      - .:/app/
 
   tailwind:
     tty: true

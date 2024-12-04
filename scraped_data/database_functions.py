@@ -137,7 +137,8 @@ def save_data_to_db(table_name, rows):
 
     # Construct the SQL query
     sql = f'INSERT INTO "project_{table_name}" ({column_names}) VALUES ({placeholders})'
-    logger.debug("Prepared query for entering scraped data: \n" + sql)
+    logger.debug("Prepared query for entering scraped data: \n %s \n", sql)
+    logger.debug("For values: \n %s", ", ".join(value for value in values))
     with connections["scraped_data"].cursor() as cursor:
         cursor.executemany(sql, values)
 
