@@ -31,24 +31,45 @@ def scrape_and_save_to_database(
     next_button=None,
 ):
     logger.info(f"Starting scraping data for project {project_name}")
-    prepare_table(project_name, [field["id"] for field in fields])
 
-    if not number_of_pages_to_scrape and next_button:
+    if not fields or not isinstance(fields, list):
+        raise ValueError("Fields must be a non-empty list.")
+    if not start_url:
+        raise ValueError("Start URL must be provided.")
+
+    prepare_table(project_name, [field["id"] for field in fields])
+    logger.debug(f"Table '{project_name}' in database is prepared.")
+
+    channel_layer = get_channel_layer()
+    group_name = f"scraping_progress_{project_name}"
+    if channel_layer:
+        logger.debug("Connected to websocket successfully.")
+    else:
+        logger.debug("WebSocket connection failed.")
+
+    if channel_layer:
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {"type": "progress_update", "progress": 5},
+        )
+
+    if not next_button and not number_of_pages_to_scrape:
+        raise Exception(
+            f"For project {project_name}, neither 'next_button' nor 'number_of_pages_to_scrape' was provided."
+        )
+
+    if next_button:
         urls = [start_url]
-    elif not next_button and number_of_pages_to_scrape:
-        start_url, num = separate_url_and_page_num(start_url)
-        if not num:
-            raise Exception("Unable to scrape multiple pages based on url: {start_url}")
+    else:
+        base_url, num = separate_url_and_page_num(start_url)
+        if num is None:
+            raise ValueError(f"Invalid start URL for pagination: {start_url}")
         urls = [
-            f"{start_url}{num}"
-            for num in range(
-                next_page_to_scrape, next_page_to_scrape + number_of_pages_to_scrape + 1
+            f"{base_url}{i}"
+            for i in range(
+                next_page_to_scrape, next_page_to_scrape + number_of_pages_to_scrape
             )
         ]
-    else:
-        raise Exception(
-            "For project: {project_name} were not provided number of pages to scrape or next_button selector"
-        )
 
     scraped_data = []
     scraping_process = CrawlerProcess(MainSpider.custom_settings)
@@ -58,35 +79,38 @@ def scrape_and_save_to_database(
 
     dispatcher.connect(collect_item, signal=signals.item_scraped)
 
-    scraping_process.crawl(
-        MainSpider,
-        project_id=project_name,
-        selector_type=selector_type,
-        start_urls=urls,
-        component_path=component_path,
-        fields=fields,
-        batch_size=50,
-    )
-
-    scraping_process.start()
-
-    channel_layer = get_channel_layer()
-    group_name = f"scraping_progress_{project_name}"
-
-    for item in scraped_data:
-        batch_data = item.get("batch_data", [])
-        progress = item.get("progress", 0)
-        save_data_to_db(project_name, batch_data)
-        async_to_sync(channel_layer.group_send)(
-            group_name,
-            {
-                "type": "progress_update",
-                "progress": progress,
-            },
+    try:
+        scraping_process.crawl(
+            MainSpider,
+            project_id=project_name,
+            selector_type=selector_type,
+            start_urls=urls,
+            component_path=component_path,
+            fields=fields,
+            batch_size=50,
         )
-        logger.info(f"Project: {project_name} - scraping progress: {progress:.2f}%")
 
-    logger.info(f"Project: {project_name} - scraping completed!")
+        scraping_process.start()
+
+        for item in scraped_data:
+            batch_data = item.get("batch_data", [])
+            logger.debug("Scraped data:\n" + "\n".join(f"{row}" for row in batch_data))
+            progress = item.get("progress", 0)
+            save_data_to_db(project_name, batch_data)
+            if channel_layer:
+                async_to_sync(channel_layer.group_send)(
+                    group_name,
+                    {
+                        "type": "progress_update",
+                        "progress": progress,
+                    },
+                )
+            logger.info(f"Project: {project_name} - scraping progress: {progress:.2f}%")
+
+        logger.info(f"Project: {project_name} - scraping completed!")
+    except Exception as e:
+        logger.error(f"Scraping process failed: {e}")
+        raise
 
 
 if __name__ == "__main__":

@@ -87,7 +87,7 @@ LOGGING = {
         # Celery logging
         "celery": {
             "handlers": ["celery_file"],
-            "level": "INFO",  # Log all celery task activities
+            "level": "DEBUG",  # Log all celery task activities
             "propagate": False,
         },
         # WebSocket logging

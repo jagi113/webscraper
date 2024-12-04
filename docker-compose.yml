@@ -48,12 +48,16 @@ services:
     build:
       context: .
       dockerfile: ./celery_app/Dockerfile
-    command: celery -A webscraper worker --loglevel=info
+    command: celery -A webscraper worker --loglevel=debug
     restart: always
     depends_on:
       - redis
     networks:
       - webscraper_network
+    volumes:
+      - ./logs:/app/logs
+      - ./scrapers:/app/scrapers
+      - ./celery_app:/app/celery_app
 
   tailwind:
     tty: true

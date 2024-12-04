@@ -2,6 +2,13 @@ import os
 from celery import Celery
 from django.conf import settings
 
+import logging.config
+from webscraper.logging_config import LOGGING
+
+
+# Apply the logging configuration
+logging.config.dictConfig(LOGGING)
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "webscraper.settings")
 
 app = Celery("webscraper")
