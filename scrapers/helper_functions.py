@@ -3,39 +3,19 @@ import re
 
 def separate_url_and_page_num(url):
     # Regular expression patterns to match different page formats
-    patterns = [
-        # Matches URLs with "/page/{number}/" at the end
-        (
-            r"(.*page/)(\d+)/$",
-            lambda match: match.group(1),
-            lambda match: match.group(2),
-        ),
-        # Matches URLs with "?page={number}" parameter
-        (
-            r"(.*[?&]page=)(\d+)([&/].*)?$",
-            lambda match: match.group(1),
-            lambda match: match.group(2),
-        ),
-        # Matches URLs with "/{number}/" at the end (e.g., "/2/")
-        (
-            r"(.*)/(\d+)/$",
-            lambda match: match.group(1) + "/",
-            lambda match: match.group(2),
-        ),
-        # Matches URLs with "p={number}" in the middle of the URL
-        (
-            r"(.*p=)(\d+)([&/].*)?$",
-            lambda match: match.group(1),
-            lambda match: match.group(2),
-        ),
-    ]
-
-    for pattern, prefix_func, extractor in patterns:
+    patterns = {
+        r"(.*page/)(\d+)/(\.\w+)?$": lambda match: (match.group(1), match.group(2)),                 # "/page/{number}/"
+        r"(.*[?&]page=)(\d+)([&/].*)?$": lambda match: (match.group(1), match.group(2)),            # "?page={number}"
+        r"(.*[?&]page_num=)(\d+)([&/].*)?$": lambda match: (match.group(1), match.group(2)),        # "?page_num={number}"
+        r"(.*)/(\d+)/(\.\w+)?$": lambda match: (match.group(1) + "/", match.group(2)),              # "/{number}/"
+        r"(.*p=)(\d+)([&/].*)?$": lambda match: (match.group(1), match.group(2)),                   # "p={number}"
+        r"(.*page-)(\d+)(\.\w+)?$": lambda match: (match.group(1), match.group(2)),                 # "page-{number}"
+    }
+        
+    for pattern, extractor in patterns.items():
         match = re.match(pattern, url)
         if match:
-            base_url = prefix_func(match)  # Generate the base URL
-            page_number = extractor(match)  # Extract the page number
-            return base_url, page_number
+            return extractor(match)
 
     # If no match found, return the original URL and None for page number
     return url, None
