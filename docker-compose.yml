@@ -8,6 +8,7 @@ services:
       - ./:/usr/src/webscraper
     ports:
       - "8002:8002"
+    working_dir: /usr/src/webscraper
     restart: always
     environment:
       - PYTHONUNBUFFERED=1
@@ -33,13 +34,13 @@ services:
   redis:
     image: redis:6
     ports:
-      - "6380:6380"
+      - "6380:6379"
     restart: always    
     networks:
       - webscraper_network
     volumes:
       - ./redis_app/redis.conf:/usr/local/etc/redis/redis.conf 
-      - ./logs/redis_logs.log:/var/log/redis/redis.log
+      - ./logs/redis.log:/var/log/redis/redis.log
     command: redis-server /usr/local/etc/redis/redis.conf
 
 

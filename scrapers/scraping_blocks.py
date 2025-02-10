@@ -126,7 +126,6 @@ if __name__ == "__main__":
     from projects.models import Project
 
     project = get_object_or_404(Project, id=3)
-    print(project.id)
 
     scrape_and_save_to_database(
         project_name=project.id,
