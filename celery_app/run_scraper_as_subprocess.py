@@ -6,7 +6,7 @@ import sys
 import os
 
 # Ensure the directory is included in sys.path
-sys.path.append(os.path.abspath("/usr/src/webscraper"))
+sys.path.append(os.path.abspath("/app"))
 
 from scrapers.scrapy_scraper.spiders.main_page_spider import MainSpider
 from scraped_data.database_functions import prepare_table, save_data_to_db

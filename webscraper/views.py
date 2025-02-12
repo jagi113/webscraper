@@ -15,8 +15,6 @@ from webscraper.forms import MainWebsiteForm
 from webscraper.helper_functions import get_page_content
 from celery_app.tasks import scrape_and_save_to_database_task
 
-# from scrapers.scrapy_scraper.spiders.page_scraper import PageScraper
-
 
 class ScrapingProject(View):
     def get(self, request, project_id):
