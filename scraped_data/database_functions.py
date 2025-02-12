@@ -40,16 +40,7 @@ def get_db_engine():
     raise ValueError(f"Unsupported database engine: {db_engine}")
 
 
-def prepare_table(table_name, cols):
-    check_database_file_integrity("scraped_data")
-    table_name = f"project_{validate_identifier(table_name)}"
-    logger.debug(f"Preparing table: {table_name}")
-    # Validate and prepare column names
-    cols_names = [validate_identifier(col) for col in cols]
-
-    # Get the database engine
-    db_engine = get_db_engine()
-
+def check_table_integrity(table_name, db_engine):
     with connections["scraped_data"].cursor() as cursor:
         # Check if the table exists based on the database engine
         if db_engine == "sqlite":
@@ -75,7 +66,27 @@ def prepare_table(table_name, cols):
                 """
             )
 
-        # Fetch existing columns based on the database engine
+
+def check_database_table_integrity(table_name):
+    check_database_file_integrity("scraped_data")
+    db_engine = get_db_engine()
+    check_table_integrity(table_name, db_engine)
+
+
+def prepare_table(table_name, cols):
+    check_database_file_integrity("scraped_data")
+    table_name = f"project_{validate_identifier(table_name)}"
+    check_database_table_integrity(table_name)
+    db_engine = get_db_engine()
+    # Validate and prepare column names
+    cols_names = [validate_identifier(col) for col in cols]
+
+    # Get the database engine
+
+    logger.debug(f"Preparing table: {table_name}")
+    # Fetch existing columns based on the database engine
+    with connections["scraped_data"].cursor() as cursor:
+        existing_columns = []
         if db_engine == "sqlite":
             cursor.execute(f'PRAGMA table_info("{table_name}");')
             existing_columns = [
@@ -128,7 +139,6 @@ def save_data_to_db(table_name, rows):
     """
     # Validate the table name
     table_name = validate_identifier(table_name)
-
     # Ensure rows is not empty
     if not rows:
         logger.error("No rows provided for insertion.")
@@ -158,6 +168,7 @@ def save_data_to_db(table_name, rows):
 
 def get_data(table_name, limit_rows=None):
     table_name = validate_identifier(table_name)
+    check_database_table_integrity(f"project_{table_name}")
 
     sql = f'SELECT * FROM "project_{table_name}"'
 
