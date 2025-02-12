@@ -110,7 +110,7 @@ class FindComponent(View):
             component_response = parser.parse(html_content=page_content, **kwargs)
         except Exception as e:
             error_response = f"While parsing html content for components following error occured: \n{e}"
-        print(project.fields["fields"])
+
         return render(
             request,
             "webscraper/partial/_component_response.html",
@@ -163,7 +163,7 @@ class FindFieldValueSelector(View):
                 "webscraper/partial/_field_error_response.html",
                 {"project": project, "error_response": error_response},
             )
-        print(attribute)
+
         return render(
             request,
             "webscraper/partial/_find_selector_response.html",
