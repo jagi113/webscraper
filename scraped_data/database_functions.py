@@ -1,8 +1,20 @@
-import re
-from django.db import connections
 import logging
+import os
+import sqlite3
+import re
+
+from django.db import connections
 
 logger = logging.getLogger("database")
+
+
+def check_database_file_integrity(db_file_path):
+    if not os.path.exists(db_file_path):
+        logger.info(f"Database file {db_file_path} not found. Creating it...")
+        conn = sqlite3.connect(db_file_path)
+        conn.close()
+    else:
+        logger.debug(f"Database file {db_file_path} already exists.")
 
 
 def validate_identifier(identifier):
@@ -29,6 +41,7 @@ def get_db_engine():
 
 
 def prepare_table(table_name, cols):
+    check_database_file_integrity("scraped_data")
     table_name = f"project_{validate_identifier(table_name)}"
     logger.debug(f"Preparing table: {table_name}")
     # Validate and prepare column names
