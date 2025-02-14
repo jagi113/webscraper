@@ -32,7 +32,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "192.168.101.189"] + [
+ALLOWED_HOSTS = [
+    "localhost",
+    "0.0.0.0",
+    "127.0.0.1",
+    "192.168.101.189",
+    "192.168.101.180",
+    "dory-aware-ultimately.ngrok-free.app",
+] + [
     host.strip()
     for host in getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
     if host.strip()
@@ -152,6 +159,8 @@ USE_I18N = True
 
 USE_TZ = True
 
+
+FORCE_SCRIPT_NAME = "/projects/demo/webscraper/"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
