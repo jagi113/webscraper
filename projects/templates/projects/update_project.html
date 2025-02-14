@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<form id="project_form" method="POST" action="{% url 'projects:update_project' project.id %}" class="flex flex-col gap-6">
+<form id="project_form" method="POST" action="{% url 'projects:update_project' project.id %}" class="flex flex-col gap-6" data-turbo="false">
     {% csrf_token %}
     {% for field in form %}
         <div class="flex flex-row items-center align-middle w-full gap-8">
@@ -13,12 +13,20 @@
             </div>
             <div class="flex-grow">
                 {{ field }}
+                    {% if field.errors %}
+                    {% for error in field.errors %}
+                        <div class="mt-2 text-sm font-bold text-red-500">
+                                {{ error }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
             </div>
         </div>
     {% endfor %}
 
 
 </form>
+
 <div class="flex gap-8 mt-10">
     <button type="submit" form="project_form" class="py-3 w-full items-center text-center text-amber-300 border-2 border-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
         Save Project Settings

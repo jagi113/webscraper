@@ -32,12 +32,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+WORKING_PCS_IP = [
+    "localhost",
+    "0.0.0.0",
+    "127.0.0.1",
+    "192.168.101.189",
+    "192.168.101.195",
+]
+
 ALLOWED_HOSTS = [
     "localhost",
     "0.0.0.0",
     "127.0.0.1",
     "192.168.101.189",
     "192.168.101.180",
+    "192.168.101.195",
     "dory-aware-ultimately.ngrok-free.app",
 ] + [
     host.strip()
@@ -81,6 +90,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "projects.middleware.DemoPresentationMiddleware",
 ]
 
 ROOT_URLCONF = "webscraper.urls"

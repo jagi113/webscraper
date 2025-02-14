@@ -58,7 +58,7 @@ def scrape_and_save_to_database(
             f"For project {project_name}, neither 'next_button' nor 'number_of_pages_to_scrape' was provided."
         )
 
-    if next_button:
+    if next_button or number_of_pages_to_scrape == 1:
         urls = [start_url]
     else:
         base_url, num = separate_url_and_page_num(start_url)
