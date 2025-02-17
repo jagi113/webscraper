@@ -125,11 +125,20 @@ class FindComponent(View):
 
 class FindFieldValueSelector(View):
     @turbo_stream_response
-    def post(self, request, project_id, field_name=None):
+    def post(self, request, project_id, field_id=None):
         project = get_object_or_404(Project, id=project_id)
+        error_response = None
+
+        field_name = None
+        if field_id:
+            field_name = project.fields.get(field_id, None)
+            if not field_name:
+                error_response = f"Error: field_id '{field_id}' does not exist in the project fields."
+        else:
+            field_id = None
         field_expected_value = request.POST.get("field_expected_value")
         attribute = request.POST.get("attribute")
-        error_response = None
+
         error_response, page_content = get_page_content(project)
 
         parser = PageParser()
@@ -155,7 +164,7 @@ class FindFieldValueSelector(View):
                 break
 
         if not selector:
-            error_response = f"Value {field_expected_value} was not found in the components. Try again!"
+            error_response = f"Value '{field_expected_value}' was not found in the components. Try again!"
 
         if error_response is not None:
             return render(
@@ -171,7 +180,8 @@ class FindFieldValueSelector(View):
                 "project": project,
                 "field": (
                     {
-                        "name": field_name if field_name else None,
+                        "id": field_id,
+                        "name": field_name,
                         "selector": selector if not error_response else None,
                         "attribute": (attribute if not error_response else None),
                     }

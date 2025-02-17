@@ -2,7 +2,7 @@ import logging
 import html
 from parsel import Selector
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("django")
 
 
 class PageParser:
@@ -18,77 +18,86 @@ class PageParser:
 
     def generate_selector(self, html_content, selector_type, value, attribute=None):
         selector = Selector(text=html_content)
-        print(attribute)
-
-        # Unescape the value to match encoded HTML content
         normalized_value = html.unescape(value.strip())
+
+        logger.debug(f"Element is: {selector}")
+        logger.debug(f"Value to search for in components: {normalized_value}")
+
+        if attribute:
+            logger.debug("attribute identified and trying to find the element")
+            if attribute.lower() in ["text", "text()"]:
+                xpath_query = (
+                    f"//*[contains(normalize-space(string(.)), '{normalized_value}')]"
+                )
+                attribute = "text()"
+            else:
+                if not attribute.startswith("@"):
+                    attribute = f"@{attribute}"
+                xpath_query = f"//*[{attribute}='{normalized_value}'] | //*[{attribute}[contains(., '{normalized_value}')]]"
+
+            element = selector.xpath(xpath_query)
+
+            logger.debug(f"Attribute by user is: {attribute}")
+            logger.debug(f"Element found: \n {element.get()}")
+        else:
+            logger.debug(
+                "No specific attribute provided, searching across text, href, src, and title"
+            )
+            element = selector.xpath(
+                f"(//*[contains(normalize-space(string(.)), '{normalized_value}') "
+                f"or contains(@href, '{normalized_value}') "
+                f"or contains(@src, '{normalized_value}') "
+                f"or contains(@title, '{normalized_value}')])[1]"
+            )
+            logger.debug(f"Element found: {element.get()}")
+
+        if not element or len(element) == 0:
+            logger.debug(f"Value '{normalized_value}' not found in an element")
+            return None, None
+
+        logger.debug("Element passed no element condition")
+
+        if not attribute:
+            if element.xpath("./@href").get() == normalized_value:
+                attribute = "@href"
+            elif element.xpath("./@src").get() == normalized_value:
+                attribute = "@src"
+            elif element.xpath("./@title").get() == normalized_value:
+                attribute = "@title"
+            elif normalized_value in element.xpath("normalize-space(string(.))").get():
+                child = element.xpath(
+                    f"//*[contains(normalize-space(string(.)), '{normalized_value}')]"
+                )
+                filtered_html_body_out = [
+                    el
+                    for el in child
+                    if el.xpath("name()").get() not in ["html", "body"]
+                ]
+                element = filtered_html_body_out[-1]
+                logger.debug(f"Child found: {element.get()}")
+                attribute = "text()"
+
+        logger.debug(f"Attribute is: {attribute}")
 
         path_parts = []
 
-        if attribute:
-            if attribute == "text" or attribute == "text()":
-                element = selector.xpath(
-                    f"//*[contains(normalize-space(text()), '{normalized_value}')]"
-                )
-                attribute = "text()"
-            print("attribute identified and trying to find the element")
-
-            if not attribute.startswith("@"):
-                attribute = f"@{attribute}"
-
-            # Use contains to match partially if necessary
-            element = selector.xpath(
-                f"//*[{attribute}='{normalized_value}'] | //*[{attribute}[contains(., '{normalized_value}')]]"
-            )
-
-            print("Element found based on attribute")
-            print(element)
-            print(f"Attribute is: {attribute}")
-        else:
-            print("No attribute provided")
-            element = selector.xpath(
-                f"//*[contains(normalize-space(text()), '{normalized_value}') "
-                f"or contains(@href, '{normalized_value}') "
-                f"or contains(@src, '{normalized_value}') "
-                f"or contains(@title, '{normalized_value}')]"
-            )
-        print(attribute)
-        if not element or len(element) == 0:
-            return None, None
-        print("element passed no element condition")
-        print(attribute)
-        if not attribute:
-            if element.xpath("./@href"):
-                href_value = element.xpath("./@href").get()
-                if href_value == normalized_value:
-                    attribute = "@href"
-            elif element.xpath("./@src"):
-                src_value = element.xpath("./@src").get()
-                if src_value == normalized_value:
-                    attribute = "@src"
-            elif element.xpath("./@title"):
-                title_value = element.xpath("./@title").get()
-                if title_value == normalized_value:
-                    attribute = "@title"
-            else:
-                attribute = "text()"
-
-        print(attribute)
-        while element:
+        while element is not None:
+            logger.debug(element.get())
             tag = element.xpath("name()").get()
+            logger.debug("Tag is " + tag)
             if not tag or tag in ["html", "body"]:
                 break
 
-            print("Tag is " + tag)
+            logger.debug("Tag is " + tag)
 
             element_classes = element.xpath("./@class").get()
-            print(element_classes)
-
-            selector_part = tag
+            logger.debug(f"Element classes: {element_classes}")
 
             if element_classes:
                 classes = element_classes.split()
-                selector_part += "".join([f".{cls}" for cls in classes])
+                selector_part = tag + "".join([f".{cls}" for cls in classes])
+            else:
+                selector_part = tag
 
             path_parts.append(selector_part)
 
@@ -96,10 +105,11 @@ class PageParser:
 
         if selector_type.lower() == "css":
             css_selector = " ".join(reversed(path_parts))
-            print(css_selector)
+            logger.debug(f"css_selector is: {css_selector}")
             return css_selector, attribute
         elif selector_type.lower() == "xpath":
             xpath_selector = "/" + "/".join(reversed(path_parts))
+            logger.debug(f"xpath_selector is: {xpath_selector}")
             return xpath_selector, attribute
         else:
             raise ValueError("Invalid selector type. Please use 'css' or 'xpath'.")
