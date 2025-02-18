@@ -37,6 +37,7 @@ def scrape_and_save_to_database(
     if not start_url:
         raise ValueError("Start URL must be provided.")
 
+    logger.debug("Fields:\n%s", "\n".join(str(field) for field in fields))
     prepare_table(project_name, [field["id"] for field in fields])
     logger.debug(f"Table '{project_name}' in database is prepared.")
 
