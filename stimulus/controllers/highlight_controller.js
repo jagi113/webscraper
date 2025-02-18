@@ -122,7 +122,6 @@ export default class extends Controller {
       "https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js";
 
     if (!document.querySelector(`link[href="${prismCss}"]`)) {
-      console.log("Loading prismCSS");
       await loadLink({
         rel: "stylesheet",
         href: prismCss,
@@ -130,7 +129,6 @@ export default class extends Controller {
     }
 
     if (!document.querySelector(`script[src="${prismJs}"]`)) {
-      console.log("Loading prismJS");
       await loadScript({
         async: true,
         defer: true,
