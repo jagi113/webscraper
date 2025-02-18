@@ -4,6 +4,7 @@ from django.views import View
 from projects.forms import ProjectForm
 from projects.models import Project
 from projects.validators import validate_project_data
+from scraped_data.database_functions import delete_project_data_table
 
 # Create your views here.
 
@@ -104,6 +105,7 @@ class UpdateProjectView(View):
 class DeleteProjectView(View):
     def post(self, request, project_id):
         project = get_object_or_404(Project, id=project_id)
+        delete_project_data_table(project_id)
         project.delete()
         return redirect("projects:projects")
 

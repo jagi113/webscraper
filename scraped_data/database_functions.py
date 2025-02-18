@@ -67,15 +67,19 @@ def check_table_integrity(table_name, db_engine):
             )
 
 
+def get_project_table_name(project_id):
+    return f"project_{validate_identifier(project_id)}"
+
+
 def check_database_table_integrity(table_name):
     check_database_file_integrity("scraped_data")
     db_engine = get_db_engine()
     check_table_integrity(table_name, db_engine)
 
 
-def prepare_table(table_name, cols):
+def prepare_table(project_id, cols):
     check_database_file_integrity("scraped_data")
-    table_name = f"project_{validate_identifier(table_name)}"
+    table_name = get_project_table_name(project_id)
     check_database_table_integrity(table_name)
     db_engine = get_db_engine()
     # Validate and prepare column names
@@ -129,7 +133,7 @@ def prepare_table(table_name, cols):
             cursor.execute(f'ALTER TABLE "{new_table_name}" RENAME TO "{table_name}";')
 
 
-def save_data_to_db(table_name, rows):
+def save_data_to_db(project_id, rows):
     """
     Inserts multiple rows into the specified table.
 
@@ -138,7 +142,7 @@ def save_data_to_db(table_name, rows):
     - rows: A list of dictionaries representing rows. Keys are column names.
     """
     # Validate the table name
-    table_name = validate_identifier(table_name)
+    table_name = get_project_table_name(project_id)
     # Ensure rows is not empty
     if not rows:
         logger.error("No rows provided for insertion.")
@@ -159,18 +163,18 @@ def save_data_to_db(table_name, rows):
     column_names = ", ".join([f'"{col}"' for col in columns])
 
     # Construct the SQL query
-    sql = f'INSERT INTO "project_{table_name}" ({column_names}) VALUES ({placeholders})'
+    sql = f'INSERT INTO "{table_name}" ({column_names}) VALUES ({placeholders})'
     logger.debug("Prepared query for entering scraped data: \n %s \n", sql)
     logger.debug("For values: \n %s", ", ".join(str(value) for value in values))
     with connections["scraped_data"].cursor() as cursor:
         cursor.executemany(sql, values)
 
 
-def get_data(table_name, limit_rows=None):
-    table_name = validate_identifier(table_name)
-    check_database_table_integrity(f"project_{table_name}")
+def get_data(project_id, limit_rows=None):
+    table_name = get_project_table_name(project_id)
+    check_database_table_integrity(table_name)
 
-    sql = f'SELECT * FROM "project_{table_name}"'
+    sql = f'SELECT * FROM "{table_name}"'
 
     if limit_rows is not None:
         if not isinstance(limit_rows, int) or limit_rows <= 0:
@@ -186,18 +190,18 @@ def get_data(table_name, limit_rows=None):
     return data
 
 
-def remove_duplicates_based_on_cols(table_name, cols):
-    table_name = validate_identifier(table_name)
+def remove_duplicates_based_on_cols(project_id, cols):
+    table_name = get_project_table_name(project_id)
     cols_names = [validate_identifier(col) for col in cols]
 
     db_engine = get_db_engine()
 
     if db_engine == "sqlite":
         remove_duplicates_sql = f"""
-        DELETE FROM "project_{table_name}" 
+        DELETE FROM "{table_name}" 
         WHERE id NOT IN (
             SELECT MAX(id)
-            FROM "project_{table_name}"
+            FROM "{table_name}"
             GROUP BY {", ".join(f'"{col}"' for col in cols_names)}
         );
         """
@@ -207,9 +211,9 @@ def remove_duplicates_based_on_cols(table_name, cols):
             SELECT 
                 id,
                 ROW_NUMBER() OVER (PARTITION BY {", ".join(f'"{col}"' for col in cols_names)} ORDER BY id DESC) AS row_num
-            FROM "project_{table_name}"
+            FROM "{table_name}"
         )
-        DELETE FROM "project_{table_name}"
+        DELETE FROM "{table_name}"
         WHERE id IN (
             SELECT id FROM CTE WHERE row_num > 1
         );
@@ -218,3 +222,32 @@ def remove_duplicates_based_on_cols(table_name, cols):
     with connections["scraped_data"].cursor() as cursor:
         logger.debug(f"Removing duplicates: \n{remove_duplicates_sql}")
         cursor.execute(remove_duplicates_sql)
+
+
+def delete_project_data_table(project_id):
+    table_name = get_project_table_name(project_id)
+    db_engine = get_db_engine()
+
+    with connections["scraped_data"].cursor() as cursor:
+        if db_engine == "sqlite":
+            check_table = f"""
+            SELECT name FROM sqlite_master 
+            WHERE type='table' AND name='{table_name}';
+            """
+        else:
+            check_table = f"""
+            SELECT tablename FROM pg_tables 
+            WHERE schemaname = 'public' AND tablename = '{table_name}';
+            """
+
+        cursor.execute(check_table)
+        table_exists = cursor.fetchone()
+
+        if not table_exists:
+            logger.debug(f"Table '{table_name}' does not exist. Skipping deletion.")
+            return
+
+        drop_table = f'DROP TABLE "{table_name}";'
+
+        logger.debug(f"Dropping table '{table_name}'")
+        cursor.execute(drop_table)

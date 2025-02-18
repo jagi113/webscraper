@@ -29,7 +29,7 @@ class RemoveDuplicatesView(View):
         selected_field_ids = request.POST.getlist("fields[]")
         if selected_field_ids == []:
             data = get_data(project.id)
-            return render(  # add failure toast message if no column is chosen
+            return render(
                 request,
                 "scraped_data/partial/_data_table.html",
                 {
