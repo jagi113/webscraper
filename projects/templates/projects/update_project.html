@@ -31,15 +31,17 @@
     <button type="submit" form="project_form" class="py-3 w-full items-center text-center text-amber-300 border-2 border-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
         Save Project Settings
     </button>
-    <form action="{% url 'projects:delete_project' project.id %}" method="POST">
-        {% csrf_token %}
-        <button 
-            type="submit"
-            class="px-3 py-3 w-fit items-center text-center text-red-500 border-2 border-red-500 hover:bg-red-500 hover:text-zinc-800 rounded-md font-medium text-nowrap"
-        >
-            Delete Entire Project And Data
-        </button>
-    </form>
+
+    <button 
+        type="button" 
+        data-controller="modal"
+        data-action="click->modal#openModal"
+        {% url 'projects:delete_project' project.id as action_url %}
+        data-modal-html-value='{% include "components/delete_confirmation_modal.html" with question="Are you sure you want to delete whole project and all its data?" action=action_url confirm_text="Delete Project" %}'
+        class="px-3 py-3 w-fit h-fit items-center text-center text-red-500 border-2 border-red-500 hover:bg-red-500 hover:text-zinc-800 rounded-md font-medium text-nowrap"
+    >
+        Delete Entire Project And Data
+    </button>
 </div>
 <div class="flex text-lg font-bold text-amber-300 w-full mt-16 mb-8">
     Fields overview:   
