@@ -2,7 +2,7 @@ import logging
 import scrapy
 from scrapy.crawler import CrawlerProcess
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("celery")
 
 
 class MainSpider(scrapy.Spider):
@@ -54,18 +54,29 @@ class MainSpider(scrapy.Spider):
 
                 # Extract field values
                 if attribute in ["text()", "text"]:
+                    logger.debug(f"Extracting text value of field: {selector}")
                     field_value = (
-                        component.css(selector + "::text").get()
+                        " ".join(component.css(f"{selector} *::text").getall())
                         if self.selector_type == "CSS"
-                        else component.xpath(f"{selector}/text()").get()
+                        else component.xpath(
+                            f"normalize-space(string({selector}))"
+                        ).get()
                     )
                 else:
+                    logger.debug(
+                        f"Extracting '{attribute[1:]}' value of field: {selector}"
+                    )
                     field_value = (
                         component.css(f"{selector}::attr({attribute[1:]})").get()
                         if self.selector_type == "CSS"
                         else component.xpath(f"{selector}/{attribute}").get()
                     )
-                scraped_data[field["id"]] = field_value
+                logger.debug(f"Found value: {field_value}")
+                if field_value:
+                    cleaned_value = " ".join(field_value.strip().split())
+                else:
+                    cleaned_value = ""
+                scraped_data[field["id"]] = cleaned_value
 
             self.data_batch.append(scraped_data)
 
