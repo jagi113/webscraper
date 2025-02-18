@@ -1,7 +1,11 @@
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 from projects.models import Project
-from scraped_data.database_functions import get_data, remove_duplicates_based_on_cols
+from scraped_data.database_functions import (
+    get_data,
+    remove_duplicates_based_on_cols,
+    delete_all_scraped_data,
+)
 from webscraper.decorators import turbo_stream_response
 
 
@@ -40,6 +44,25 @@ class RemoveDuplicatesView(View):
             )
 
         remove_duplicates_based_on_cols(project.id, selected_field_ids)
+        data = get_data(project.id)
+
+        return render(
+            request,
+            "scraped_data/partial/_data_table.html",
+            {
+                "project": project,
+                "fields": project.fields["fields"].values(),
+                "data": data,
+            },
+        )
+
+
+class DeleteAllScrapedData(View):
+    @turbo_stream_response
+    def post(self, request, project_id):
+        project = get_object_or_404(Project, id=project_id)
+
+        delete_all_scraped_data(project.id)
         data = get_data(project.id)
 
         return render(

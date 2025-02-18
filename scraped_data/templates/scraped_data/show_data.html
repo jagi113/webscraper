@@ -20,34 +20,36 @@
     </div>
     {% include 'scraped_data/components/data_table.html' with fields=fields data=data %}
 </div>
-<form method="POST" action="{% url 'scraped_data:remove_duplicates' project.id %}" class="flex text-amber-300 font-bold gap-8 flex-row align-top justify-between">
-    {% csrf_token %}
-    <div class="flex flex-col gap-2">
-        <div class="text-2xl">Remove data duplicates based on values of the fields:</div>
-        <div class="flex flex-row gap-8 flex-wrap text-base">
-            {% for field in fields %}
-                <div class="flex min-w-14 items-center gap-2">
-                    <input 
-                        class="w-4 h-4" 
-                        type="checkbox" 
-                        value="{{ field.id }}" 
-                        name="fields[]" 
-                        id="checkbox-{{ field.id }}" 
-                    />
-                    <!-- Label that changes color when checkbox is checked -->
-                    <label 
-                        for="checkbox-{{ field.id }}" 
-                        class="text-zinc-300 peer-checked:text-amber-300 cursor-pointer"
-                    >
-                        {{ field.name }}
-                    </label>
-                </div>
-            {% endfor %}
+<div class="flex flex-col gap-2">
+    {% include 'scraped_data/components/delete_all_scraped_data.html' with project=project %}
+    <form method="POST" action="{% url 'scraped_data:remove_duplicates' project.id %}" class="flex text-amber-300 font-bold gap-8 flex-row align-top justify-between">
+        {% csrf_token %}
+        <div class="flex flex-col gap-2">
+            <div class="text-2xl">Remove data duplicates based on values of the fields:</div>
+            <div class="flex flex-row gap-8 flex-wrap text-base">
+                {% for field in fields %}
+                    <div class="flex min-w-14 items-center gap-2">
+                        <input 
+                            class="w-4 h-4" 
+                            type="checkbox" 
+                            value="{{ field.id }}" 
+                            name="fields[]" 
+                            id="checkbox-{{ field.id }}" 
+                        />
+                        <!-- Label that changes color when checkbox is checked -->
+                        <label 
+                            for="checkbox-{{ field.id }}" 
+                            class="text-zinc-300 peer-checked:text-amber-300 cursor-pointer"
+                        >
+                            {{ field.name }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
-    </div>
-    <div class="h-auto flex align-top">
-        <button type="submit" class="px-3 py-3 w-fit h-fit items-center text-center text-amber-300 border-2 border-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">Remove Duplicates</button>
-    </div>
-</form>
-
+        <div class="h-auto flex align-top">
+            <button type="submit" class="px-3 py-3 w-fit h-fit items-center text-center text-amber-300 border-2 border-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">Remove Duplicates</button>
+        </div>
+    </form>
+</div>
 {% endblock %}

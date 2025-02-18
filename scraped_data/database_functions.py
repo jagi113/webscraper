@@ -7,6 +7,8 @@ from django.db import connections
 
 logger = logging.getLogger("database")
 
+SCRAPED_DATA_DATABASE = "scraped_data"
+
 
 def check_database_file_integrity(db_file_path):
     if not os.path.exists(db_file_path):
@@ -34,15 +36,15 @@ def get_db_engine():
     """
     Returns the current database engine used in the Django connection.
     """
-    db_engine = connections["scraped_data"].vendor
+    db_engine = connections[SCRAPED_DATA_DATABASE].vendor
     if db_engine == "sqlite" or db_engine == "postgresql":
         return db_engine
     raise ValueError(f"Unsupported database engine: {db_engine}")
 
 
-def check_table_integrity(table_name, db_engine):
-    with connections["scraped_data"].cursor() as cursor:
-        # Check if the table exists based on the database engine
+def check_table_existence(table_name, db_engine):
+    table_exists = None
+    with connections[SCRAPED_DATA_DATABASE].cursor() as cursor:
         if db_engine == "sqlite":
             cursor.execute(
                 f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}';",
@@ -54,10 +56,14 @@ def check_table_integrity(table_name, db_engine):
                 [table_name],
             )
             table_exists = cursor.fetchone()[0]
+        return table_exists
 
-        if not table_exists:
-            # Table does not exist, create it
-            logger.debug(f"Creating table: {table_name}")
+
+def check_table_integrity(table_name, db_engine):
+    table_exists = check_table_existence(table_name, db_engine)
+    if not table_exists:
+        logger.debug(f"Creating table: {table_name}")
+        with connections[SCRAPED_DATA_DATABASE].cursor() as cursor:
             cursor.execute(
                 f"""
                 CREATE TABLE "{table_name}" (
@@ -72,13 +78,12 @@ def get_project_table_name(project_id):
 
 
 def check_database_table_integrity(table_name):
-    check_database_file_integrity("scraped_data")
+    check_database_file_integrity(SCRAPED_DATA_DATABASE)
     db_engine = get_db_engine()
     check_table_integrity(table_name, db_engine)
 
 
 def prepare_table(project_id, cols):
-    check_database_file_integrity("scraped_data")
     table_name = get_project_table_name(project_id)
     check_database_table_integrity(table_name)
     db_engine = get_db_engine()
@@ -89,7 +94,7 @@ def prepare_table(project_id, cols):
 
     logger.debug(f"Preparing table: {table_name}")
     # Fetch existing columns based on the database engine
-    with connections["scraped_data"].cursor() as cursor:
+    with connections[SCRAPED_DATA_DATABASE].cursor() as cursor:
         existing_columns = []
         if db_engine == "sqlite":
             cursor.execute(f'PRAGMA table_info("{table_name}");')
@@ -166,7 +171,7 @@ def save_data_to_db(project_id, rows):
     sql = f'INSERT INTO "{table_name}" ({column_names}) VALUES ({placeholders})'
     logger.debug("Prepared query for entering scraped data: \n %s \n", sql)
     logger.debug("For values: \n %s", ", ".join(str(value) for value in values))
-    with connections["scraped_data"].cursor() as cursor:
+    with connections[SCRAPED_DATA_DATABASE].cursor() as cursor:
         cursor.executemany(sql, values)
 
 
@@ -183,7 +188,7 @@ def get_data(project_id, limit_rows=None):
     sql += ";"
     logger.debug(f"Getting data: {sql}")
 
-    with connections["scraped_data"].cursor() as cursor:
+    with connections[SCRAPED_DATA_DATABASE].cursor() as cursor:
         cursor.execute(sql)  # Execute the query
         data = cursor.fetchall()  # Fetch all results
 
@@ -205,7 +210,7 @@ def remove_duplicates_based_on_cols(project_id, cols):
             GROUP BY {", ".join(f'"{col}"' for col in cols_names)}
         );
         """
-    else:
+    elif db_engine == "postgresql":
         remove_duplicates_sql = f"""
         WITH CTE AS (
             SELECT 
@@ -219,7 +224,7 @@ def remove_duplicates_based_on_cols(project_id, cols):
         );
         """
 
-    with connections["scraped_data"].cursor() as cursor:
+    with connections[SCRAPED_DATA_DATABASE].cursor() as cursor:
         logger.debug(f"Removing duplicates: \n{remove_duplicates_sql}")
         cursor.execute(remove_duplicates_sql)
 
@@ -228,26 +233,29 @@ def delete_project_data_table(project_id):
     table_name = get_project_table_name(project_id)
     db_engine = get_db_engine()
 
-    with connections["scraped_data"].cursor() as cursor:
-        if db_engine == "sqlite":
-            check_table = f"""
-            SELECT name FROM sqlite_master 
-            WHERE type='table' AND name='{table_name}';
-            """
-        else:
-            check_table = f"""
-            SELECT tablename FROM pg_tables 
-            WHERE schemaname = 'public' AND tablename = '{table_name}';
-            """
+    table_name = get_project_table_name(project_id)
+    db_engine = get_db_engine()
+    table_exists = check_table_existence(table_name, db_engine)
 
-        cursor.execute(check_table)
-        table_exists = cursor.fetchone()
+    if not table_exists:
+        logger.debug(f"Table '{table_name}' does not exist. Skipping deletion.")
+        return
 
-        if not table_exists:
-            logger.debug(f"Table '{table_name}' does not exist. Skipping deletion.")
-            return
+    logger.debug(f"Dropping table '{table_name}'")
+    drop_table = f'DROP TABLE "{table_name}";'
 
-        drop_table = f'DROP TABLE "{table_name}";'
-
-        logger.debug(f"Dropping table '{table_name}'")
+    with connections[SCRAPED_DATA_DATABASE].cursor() as cursor:
         cursor.execute(drop_table)
+
+
+def delete_all_scraped_data(project_id):
+    table_name = get_project_table_name(project_id)
+    db_engine = get_db_engine()
+    table_exists = check_table_existence(table_name, db_engine)
+
+    if table_exists:
+        with connections[SCRAPED_DATA_DATABASE].cursor() as cursor:
+            delete_table_data = f'DELETE FROM "{table_name}";'
+
+            cursor.execute(delete_table_data)
+            table_exists = cursor.fetchone()
