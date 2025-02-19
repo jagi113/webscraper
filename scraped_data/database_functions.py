@@ -259,3 +259,36 @@ def delete_all_scraped_data(project_id):
 
             cursor.execute(delete_table_data)
             table_exists = cursor.fetchone()
+
+
+def get_column_ids(project_id):
+    table_name = get_project_table_name(project_id)
+    db_engine = get_db_engine()
+
+    if db_engine == "sqlite":
+        column_names_sql = f'PRAGMA table_info("{table_name}")'
+    elif db_engine == "postgresql":
+        column_names_sql = f"SELECT column_name FROM information_schema.columns WHERE table_name = '{table_name}'"
+    else:
+        return []
+
+    with connections[SCRAPED_DATA_DATABASE].cursor() as cursor:
+        cursor.execute(column_names_sql)
+        columns = cursor.fetchall()
+    return [col[1] for col in columns]
+
+
+def get_data_in_chunks(project_id, chunk_size=10000, offset=0):
+    table_name = get_project_table_name(project_id)
+
+    while True:
+        sql = f'SELECT * FROM "{table_name}" LIMIT {chunk_size} OFFSET {offset};'
+        with connections[SCRAPED_DATA_DATABASE].cursor() as cursor:
+            cursor.execute(sql)
+            data = cursor.fetchall()
+
+        if not data:
+            break
+
+        yield data
+        offset += chunk_size

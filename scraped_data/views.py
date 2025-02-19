@@ -6,6 +6,7 @@ from scraped_data.database_functions import (
     remove_duplicates_based_on_cols,
     delete_all_scraped_data,
 )
+from scraped_data.download_process_functions import generate_all_data_as_excel_file
 from webscraper.decorators import turbo_stream_response
 
 from django.http import JsonResponse
@@ -79,13 +80,9 @@ class DeleteAllScrapedData(View):
 
 
 class DownloadAllDataAsExcelFile(View):
-    @turbo_stream_response
     def post(self, request, project_id):
         project = get_object_or_404(Project, id=project_id)
         header_map = {
             col["id"]: col["name"] for col in project.fields["fields"].values()
         }
-        print(header_map)
-        # generate_async_excel_file.delay(project.name, header_map)
-
-        return JsonResponse({"status": "processing"})
+        return generate_all_data_as_excel_file(request, project, header_map)
