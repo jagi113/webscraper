@@ -1,0 +1,12 @@
+<div class="flex text-amber-300 font-bold gap-8 flex-row align-center justify-between">
+    <div class="text-2xl flex items-center">Download all scraped data as excel file</div>
+    <form method="POST" action="{% url 'scraped_data:download_all_data_as_excel_file' project.id %}" class="h-auto flex align-middle">
+            {% csrf_token %}
+        <button 
+            type="submit" 
+            class="px-3 py-3 min-w-fit w-48 h-fit items-center text-center text-amber-300 border-2 border-amber-300 hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium"
+        >
+            Download All Data
+        </button>
+    </form>
+</div>

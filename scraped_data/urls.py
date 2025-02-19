@@ -12,13 +12,18 @@ urlpatterns = [
         name="show_data",
     ),
     path(
-        "remove_duplicates/",
+        "remove-duplicates/",
         views.RemoveDuplicatesView.as_view(),
         name="remove_duplicates",
     ),
     path(
-        "delete_all_scraped_data/",
+        "delete-all-scraped-data/",
         views.DeleteAllScrapedData.as_view(),
         name="delete_all_scraped_data",
+    ),
+    path(
+        "download-all-data-as-excel-file/",
+        views.DownloadAllDataAsExcelFile.as_view(),
+        name="download_all_data_as_excel_file",
     ),
 ]

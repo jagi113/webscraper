@@ -21,7 +21,7 @@
     {% include 'scraped_data/components/data_table.html' with fields=fields data=data %}
 </div>
 <div class="flex flex-col gap-2">
-    {% include 'scraped_data/components/delete_all_scraped_data.html' with project=project %}
+    {% include 'scraped_data/components/download_all_data_as_excel_file.html' %}
     <form method="POST" action="{% url 'scraped_data:remove_duplicates' project.id %}" class="flex text-amber-300 font-bold gap-8 flex-row align-top justify-between">
         {% csrf_token %}
         <div class="flex flex-col gap-2">
@@ -36,7 +36,6 @@
                             name="fields[]" 
                             id="checkbox-{{ field.id }}" 
                         />
-                        <!-- Label that changes color when checkbox is checked -->
                         <label 
                             for="checkbox-{{ field.id }}" 
                             class="text-zinc-300 peer-checked:text-amber-300 cursor-pointer"
@@ -48,8 +47,9 @@
             </div>
         </div>
         <div class="h-auto flex align-top">
-            <button type="submit" class="px-3 py-3 w-fit h-fit items-center text-center text-amber-300 border-2 border-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">Remove Duplicates</button>
+            <button type="submit" class="px-3 py-3 min-w-fit w-48 h-fit items-center text-center text-amber-300 border-2 border-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">Remove Duplicates</button>
         </div>
     </form>
+    {% include 'scraped_data/components/delete_all_scraped_data.html' with project=project %}
 </div>
 {% endblock %}

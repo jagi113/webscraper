@@ -1,5 +1,5 @@
 <div class="flex text-amber-300 font-bold gap-8 flex-row align-center justify-between">
-    <div class="text-2xl align-middle">Delete all scraped data from this project</div>
+    <div class="text-2xl flex items-center">Delete all scraped data from this project</div>
     <div class="h-auto flex align-middle">
         <button 
             type="button" 
@@ -7,7 +7,7 @@
             data-action="click->modal#openModal"
             {% url 'scraped_data:delete_all_scraped_data' project.id as action_url %}
             data-modal-html-value='{% include "components/delete_confirmation_modal.html" with question="Are you sure you want to delete all scraped data?" action=action_url confirm_text="Delete All Data" %}'
-            class="px-3 py-3 w-fit h-fit items-center text-center text-amber-300 border-2 border-amber-300 hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium"
+            class="px-3 py-3 min-w-fit w-48 h-fit items-center text-center text-amber-300 border-2 border-amber-300 hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium"
         >
             Delete Data
         </button>

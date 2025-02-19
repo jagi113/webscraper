@@ -8,6 +8,8 @@ from scraped_data.database_functions import (
 )
 from webscraper.decorators import turbo_stream_response
 
+from django.http import JsonResponse
+
 
 # Create your views here.
 class ShowDataView(View):
@@ -74,3 +76,16 @@ class DeleteAllScrapedData(View):
                 "data": data,
             },
         )
+
+
+class DownloadAllDataAsExcelFile(View):
+    @turbo_stream_response
+    def post(self, request, project_id):
+        project = get_object_or_404(Project, id=project_id)
+        header_map = {
+            col["id"]: col["name"] for col in project.fields["fields"].values()
+        }
+        print(header_map)
+        # generate_async_excel_file.delay(project.name, header_map)
+
+        return JsonResponse({"status": "processing"})
