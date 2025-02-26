@@ -4,6 +4,9 @@
 
 {% block content %}
 
+
+{% include 'components/project_menu.html' %}
+
 <form id="project_form" method="POST" action="{% url 'projects:update_project' project.id %}" class="flex flex-col gap-6" data-turbo="false">
     {% csrf_token %}
     {% for field in form %}

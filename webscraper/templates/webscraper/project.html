@@ -2,22 +2,8 @@
 {% load static %}
 {% block content %}
 
+{% include 'components/project_menu.html' %}
 <div class="my-10 w-full">
-    
-    <div class="flex justify-between  mb-8 sticky top-0 z-10 bg-zinc-800"> 
-        <div class="text-2xl text-amber-300 font-bold">{{ project.name }} - fields settings</div>
-        <div class="flex gap-x-2">
-            <a href="{% url 'projects:update_project' project.id %}" class="px-3 py-2 min-w-32 items-center text-center text-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
-                Project settings
-            </a>
-            <a href="{% url 'projects:project_overview' project.id %}" class="px-3 py-2 min-w-32 items-center text-center text-amber-300  hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
-                Project overview
-            </a>
-            <a href="{% url 'scraped_data:show_data' project.id %}" class="px-3 py-2 min-w-32 items-center text-center text-amber-300 hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
-                Scraped data
-            </a>
-        </div>
-    </div>
     {% include 'webscraper/components/main_website_form.html' with main_website_form=main_website_form %}
     <div id="response" class="my-8">
         {% if html_response and main_website %}

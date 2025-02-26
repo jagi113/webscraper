@@ -1,0 +1,40 @@
+{% with current_view=request.resolver_match.url_name %}
+  <div class="flex justify-between mb-8 sticky top-0 z-10 bg-zinc-800"> 
+    <div class="text-2xl text-amber-300 font-bold">
+      {{ project.name }} - 
+      {% if current_view == 'project' %}
+        Fields settings
+      {% elif current_view == 'update_project' %}
+        Project settings
+      {% elif current_view == 'project_overview' %}
+        Project overview
+      {% elif current_view == 'show_data' %}
+        Scraped data
+      {% else %}
+        Project settings
+      {% endif %}
+    </div>
+    <div class="flex gap-x-2">
+      {% if current_view != 'project' %}
+        <a href="{% url 'project' project.id %}" class="px-3 py-2 min-w-32 items-center text-center text-amber-300 hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
+          Fields settings
+        </a>
+      {% endif %}
+      {% if current_view != 'update_project' %}
+        <a href="{% url 'projects:update_project' project.id %}" class="px-3 py-2 min-w-32 items-center text-center text-amber-300 hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
+          Project settings
+        </a>
+      {% endif %}
+      {% if current_view != 'project_overview' %}
+        <a href="{% url 'projects:project_overview' project.id %}" class="px-3 py-2 min-w-32 items-center text-center text-amber-300 hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
+          Project overview
+        </a>
+      {% endif %}
+      {% if current_view != 'show_data' %}
+        <a href="{% url 'scraped_data:show_data' project.id %}" class="px-3 py-2 min-w-32 items-center text-center text-amber-300 hover:bg-amber-300 hover:text-zinc-800 rounded-md font-medium">
+          Scraped data
+        </a>
+      {% endif %}
+    </div>
+  </div>
+{% endwith %}
