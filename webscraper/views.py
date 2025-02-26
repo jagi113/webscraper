@@ -1,7 +1,10 @@
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.core.cache import cache
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 
+from celery_app.tasks import scrape_and_save_to_database_task
 from projects.models import Project
 from scrapers.request_scraper.page_scraper import PageScraper
 from scrapers.request_scraper.page_parser import PageParser
@@ -13,7 +16,6 @@ from scrapers.request_scraper.selectors import (
 from webscraper.decorators import turbo_stream_response
 from webscraper.forms import MainWebsiteForm
 from webscraper.helper_functions import get_page_content
-from celery_app.tasks import scrape_and_save_to_database_task
 
 
 class ScrapingProject(View):
@@ -313,6 +315,14 @@ class ScrapeProjectData(View):
     @turbo_stream_response
     def post(self, request, project_id):
         project = get_object_or_404(Project, id=project_id)
+        channel_layer = get_channel_layer()
+        group_name = f"scraping_progress_{project.id}"
+
+        if channel_layer:
+            async_to_sync(channel_layer.group_send)(
+                group_name,
+                {"type": "progress_update", "progress": 2},
+            )
         scrape_and_save_to_database_task.delay(
             project_name=project.id,
             selector_type=project.selector_type,
