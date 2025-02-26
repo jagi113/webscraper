@@ -7,10 +7,10 @@ The process begins by scraping the HTML content of the first page and identifyin
 
 Once the components are identified, users can create individual data fields by selecting specific elements within a component using CSS or XPath selectors and assigning field names. To simplify this process, a built-in helper tool allows users to copy sample data directly from a component, which then generates the appropriate selector automatically.
 
-After defining the fields, users can review their project settings and proceed with data extraction. The Scraped Data page displays the extracted data in a table, where column names correspond to the user-defined fields. Since the same data or pages may be scraped multiple times, the tool allows users to remove duplicate records based on selected columns.
+After defining the fields, users can review their project settings and proceed with data extraction. The Scraped Data page displays the extracted data in a table, where column names correspond to the user-defined fields. Since the same data or pages may be scraped multiple times, the tool allows users to remove duplicate records based on selected columns. Finally user can export scraped data in xlsx format.
 
 Limitations:
-This software does not support setting custom headers for scraping, bypassing human verification, modifying data during or after extraction, or exporting data in specific formats. 
+This software does not support setting custom headers for scraping, bypassing human verification, modifying data during or after extraction. 
 
 ## 🌟 Features  
 - **Project-Based Scraping** – Users can create separate projects for different scraping tasks.  
