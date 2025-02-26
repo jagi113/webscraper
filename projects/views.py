@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 
@@ -119,5 +120,10 @@ class ProjectOverviewView(View):
             {
                 "project": project,
                 "fields": project.fields["fields"],
+                "FORCE_SCRIPT_NAME": (
+                    settings.FORCE_SCRIPT_NAME.rstrip("/")
+                    if settings.FORCE_SCRIPT_NAME
+                    else ""
+                ),
             },
         )

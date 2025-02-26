@@ -73,5 +73,5 @@
     </button>
 </form>
 
-{% include 'common/scraping_progress_bar.html' with project=project %}
+{% include 'common/scraping_progress_bar.html' with project=project FORCE_SCRIPT_NAME=FORCE_SCRIPT_NAME %}
 {% endblock %}

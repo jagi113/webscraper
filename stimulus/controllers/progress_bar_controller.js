@@ -2,19 +2,12 @@ import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
   static targets = ["line", "text"];
-  static values = { projectId: String };
+  static values = { websocketUrl: String };
 
   connect() {
-    // Construct the WebSocket URL with the project ID
-    const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws"; // Handle
-    const wsUrl = `${wsProtocol}://${window.location.host}/ws/scraping-progress/${this.projectIdValue}/`;
-
-    console.log("Connecting to WebSocket:", wsUrl);
-
-    // Create a new WebSocket connection
+    const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const wsUrl = `${wsProtocol}://${window.location.host}${this.websocketUrlValue}`;
     this.socket = new WebSocket(wsUrl);
-
-    // Set up WebSocket event handlers
     this.socket.onopen = () => {
       console.log("WebSocket connected!");
     };
@@ -37,14 +30,11 @@ export default class extends Controller {
     const data = JSON.parse(event.data);
     const progress = data.progress;
 
-    // Update progress line width
     this.lineTarget.style.width = `${progress}%`;
 
-    // Update progress text
     this.textTarget.textContent = `${progress}%`;
 
-    // Update styles based on progress
-    if (progress > 10) {
+    if (progress > 1) {
       this.textTarget.classList.remove("text-amber-300", "relative", "ml-3");
       this.textTarget.classList.add("text-zinc-700", "place-self-center");
     } else {
