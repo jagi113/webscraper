@@ -135,6 +135,5 @@ export default class extends Controller {
         src: prismJs,
       });
     }
-    console.log("PrismCSS and PrismJS loaded");
   }
 }

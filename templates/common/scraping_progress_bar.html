@@ -10,7 +10,7 @@
         data-progress-bar-target="line"
     >
         <span 
-            class="relative flex text-amber-300 min-w-fit whitespace-nowrap ml-3" 
+            class="flex text-amber-300 min-w-fit whitespace-nowrap ml-3" 
             data-progress-bar-target="text"
         >
             0 %
@@ -18,28 +18,3 @@
     </div>
 </div>
 
-
-{% comment %} <script>
-    const progressSocket = new WebSocket(
-        "ws://" + window.location.host + "/ws/scraping-progress/" + {{ project.id }} + "/"
-    );
-    
-    progressSocket.onmessage = function (e) {
-        const data = JSON.parse(e.data);
-        const progressBar = document.getElementById(`progress-bar-{{project.id}}`);
-        const progressLine = progressBar.querySelector("div");
-        const progressText = progressBar.querySelector("span");
-    
-        progressLine.style.width = data.progress + "%";
-        progressText.textContent = data.progress + "%";
-    
-        if (data.progress > 10) {
-            progressText.classList.remove("text-amber-300", "relative", "ml-3");
-            progressText.classList.add("text-zinc-700", "place-self-center");
-        } else {
-            progressText.classList.add("text-amber-300", "relative", "ml-3");
-            progressText.classList.remove("text-zinc-700", "place-self-center");
-        }
-    };
-    
-</script> {% endcomment %}
