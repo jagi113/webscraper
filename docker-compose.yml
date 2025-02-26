@@ -10,10 +10,10 @@ services:
       - "8002:8002"
     working_dir: /usr/src/webscraper
     restart: always
+    env_file:
+      - .env
     environment:
       - PYTHONUNBUFFERED=1
-      - DJANGO_ALLOWED_HOSTS=192.168.101.189, localhost, 192.168.101.195, 192.168.101.180,
-      - DJANGO_CSRF_TRUSTED_ORIGINS=http://192.168.101.189:8003, http://192.168.101.180:8001, https://jaroslavgirovsky-website.jagi11.workers.dev
     networks:
     - webscraper_network
 

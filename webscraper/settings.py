@@ -30,31 +30,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-WORKING_PCS_IP = [
-    "localhost",
-    "0.0.0.0",
-    "127.0.0.1",
-    "192.168.101.189",
-    "192.168.101.195",
-]
-
-ALLOWED_HOSTS = [
-    "localhost",
-    "0.0.0.0",
-    "127.0.0.1",
-    "192.168.101.189",
-    "192.168.101.180",
-    "192.168.101.195",
-    "dory-aware-ultimately.ngrok-free.app",
-] + [
+WORKING_PCS_IP = ["localhost", "0.0.0.0", "127.0.0.1"] + [
     host.strip()
     for host in getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
     if host.strip()
 ]
 
-CSRF_TRUSTED_ORIGINS = [
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"] + [
+    host.strip()
+    for host in getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
+    if host.strip()
+]
+
+CSRF_TRUSTED_ORIGINS = ["localhost", "0.0.0.0", "127.0.0.1"] + [
     origin.strip()
     for origin in getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
     if origin.strip()
